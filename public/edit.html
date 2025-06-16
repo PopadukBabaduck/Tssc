@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title id="pageTitle">Створити нового</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- МОДАЛЬНОЕ ОКНО ПАРОЛЯ -->
+  <div id="loginModal" style="position:fixed;z-index:2000;top:0;left:0;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;background:rgba(37,42,46,0.98);">
+    <div style="background:#fff;padding:44px 32px 36px 32px;border-radius:18px;box-shadow:0 4px 44px rgba(0,0,0,0.25);min-width:340px;max-width:94vw;text-align:center;">
+      <h2 style="font-size:2em;margin-bottom:18px;font-weight:700;">Вхід в адмін-панель</h2>
+      <input type="password" id="adminPass" placeholder="Введіть пароль" autocomplete="off" 
+        style="padding:13px;width:90%;margin:12px 0 18px 0;border-radius:7px;border:1.5px solid #ccd;box-sizing:border-box;font-size:1.18em;" />
+      <br>
+      <button onclick="checkPass()" style="padding:11px 40px;font-size:1.2em;border-radius:7px;background:#27ae60;color:#fff;font-weight:700;border:none;box-shadow:0 2px 10px rgba(46,204,113,0.09);cursor:pointer;">Увійти</button>
+      <div id="loginError" style="color:#d22a2a;margin-top:17px;font-size:1.07em;"></div>
+    </div>
+  </div>
+
+  <h1 id="pageTitle">Створити нового</h1>
+
+  <form id="userForm">
+    <input type="hidden" name="id">
+    <label>Документ на ім'я: <input type="text" name="name" required></label><br>
+    <label>Статус: <input type="text" name="status" required></label><br>
+    <label>Дата народження: <input type="date" name="dob" required></label><br>
+    <label>Дата видачі: <input type="date" name="issueDate" required></label><br>
+    <label>Дата закінчення строку дії: <input type="date" name="expiryDate" required></label><br>
+    <label>Ким видано: <input type="text" name="issuedBy" required></label><br>
+    <label>Серія та номер: <input type="text" name="seriesNum" required></label><br>
+    <fieldset>
+      <legend>Категорії</legend>
+      <label>Категорія A: <input type="text" name="categories[0].cat" placeholder="A"></label>
+      <label>Дата видачі A: <input type="date" name="categories[0].date"></label><br>
+      <label>Категорія A1: <input type="text" name="categories[1].cat" placeholder="A1"></label>
+      <label>Дата видачі A1: <input type="date" name="categories[1].date"></label>
+    </fieldset><br>
+    <label>Обмеження: <input type="text" name="restrictions" placeholder="—"></label><br><br>
+    <button type="submit">Зберегти</button>
+    <button type="button" onclick="history.back()">Відмінити</button>
+  </form>
+
+  <script>
+    // Модальное окно пароля
+    const REAL_PASS = "27082048";
+    function checkPass() {
+      const val = document.getElementById('adminPass').value.trim();
+      if (val === REAL_PASS) {
+        document.getElementById('loginModal').style.display = "none";
+        document.getElementById('loginError').textContent = '';
+        document.getElementById('adminPass').value = '';
+        document.body.style.overflow = "auto";
+      } else {
+        document.getElementById('loginError').textContent = "Невірний пароль!";
+        document.getElementById('adminPass').value = '';
+        document.getElementById('adminPass').focus();
+      }
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      document.getElementById('loginModal').style.display = 'flex';
+      setTimeout(()=>{ document.getElementById('adminPass').focus(); }, 80);
+      document.body.style.overflow = "hidden";
+    });
+    document.addEventListener('keydown', e => {
+      if (document.getElementById('loginModal').style.display !== "none" && e.key === "Enter") {
+        checkPass();
+      }
+    });
+  </script>
+  <script src="script.js"></script>
+</body>
+</html>

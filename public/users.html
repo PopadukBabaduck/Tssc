@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Список користувачів</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Усі створені користувачі</h1>
+  <ul id="userList"></ul>
+  <script>
+    (async function(){
+const users = await fetch('http://localhost:3000/api/users').then(r=>r.json());
+
+      const ul = document.getElementById('userList');
+      if (!users.length) {
+        ul.textContent = 'Поки що немає жодного користувача';
+        return;
+      }
+      users.forEach(u => {
+        const li = document.createElement('li');
+        const a = document.createElement('a');
+        a.href = '/index.html?id=' + u.id;
+        a.textContent = u.name + ' (' + u.id + ')';
+        li.appendChild(a);
+        ul.appendChild(li);
+      });
+    })();
+  </script>
+</body>
+</html>

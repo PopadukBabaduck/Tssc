@@ -1,0 +1,692 @@
+/* Сброс */
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: Arial, sans-serif; color: #333;  padding-top: 50px;}
+
+/* ========== HEADER TOP ========== */
+.header-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 40px;
+  height: 170px;
+  border-bottom: 1px solid #ddd;
+  background: #fff;
+  width: 100%;
+}
+
+.logo-col {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding-left:35px; /* место под точки */
+  gap: 16px;
+}
+.logo-col .dots {
+  position: absolute;
+  top: 22px;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+} 
+.logo-col .dots span {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: rgb(51, 204, 133);
+}
+.logo-text {
+  line-height: 1.1;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 20px;
+}
+.logo-text small {
+  display: block;
+  font-size: 0.8em;
+  font-weight: normal;
+  text-transform: none;
+  color: #555;
+}
+
+/* Средний блок */
+.center-col {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  padding: 0 40px;
+  border-left: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+}
+.center-col .crest {
+  width: 80px;
+  height: auto;
+  margin-right: 0px;
+}
+.center-col .phone {
+  font-size: 1.3em;
+  color: #000;
+  text-decoration: none;
+}
+
+/* Правый блок */
+.right-col {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+.btn-success {
+  padding: 10px 24px;
+  border: 2px solid rgba(47, 163, 61, 0.755);
+  border-radius: 4px;
+  color: rgba(47, 163, 61, 0.755);
+  font-weight: bold;
+  font-size: 1.1em;
+  text-decoration: none;
+}
+.social-icons {
+  display: grid;
+  grid-template-columns: repeat(2, 32px);
+  grid-template-rows: repeat(2, 32px);
+  column-gap: 16px;
+  row-gap: 12px;
+}
+.social-icons img {
+  width: 37px;
+  height: auto;
+  display: block;
+  cursor: pointer;
+}
+.visually-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding-left: 28px;
+  border-left: 1px solid #ddd;
+  text-decoration: none;
+  color: #333;
+  font-size: 0.95em;
+}
+.visually-link img {
+  width: 40px;
+}
+.search-btn {
+  width: 32px;
+  height: 32px;
+  background: url('search.svg') center/contain no-repeat;
+  border: none;
+  cursor: pointer;
+}
+
+/* ========== NAVIGATION ========== */
+.main-nav ul {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  list-style: none;
+  border-bottom: 1px solid #ddd;
+  padding: 0;
+  margin: 0 auto;
+  height: 60px;
+}
+.main-nav li {
+  margin-right: 40px;
+  position: relative;
+}
+.main-nav li:last-child {
+  margin-right: 0;
+}
+.main-nav button {
+  background: none;
+  border: none;
+  padding: 16px 0;
+  font-size: 1.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  color: #222;
+  position: relative;
+  outline: none;
+  transition: color 0.2s;
+    letter-spacing: 0.5px;
+
+  /* сделаем шрифт насыщеннее */
+  font-weight: 400;
+}
+.main-nav button.active,
+.main-nav button:hover {
+  color: #3c9;
+}
+.main-nav button.active::after,
+.main-nav button:hover::after {
+  content: '';
+  position: absolute;
+  left: 0; right: 0;
+  bottom: -2px;
+  height: 3px;
+  background: #3c9;
+}
+
+.main-nav .dropdown {
+  position: relative;
+}
+/* ========== DROPDOWN MENU ========== */
+.main-nav .dropdown {
+  position: relative;
+}
+
+/* ========== DROPDOWN MENU ========== */
+.main-nav .dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  /* фон на всю ширину и высоту */
+  background: #fff;
+  border: 1px solid #ddd;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+  border-radius: 6px;
+  margin-top: 0;       /* обнуляем отступ, чтобы фон начинался прямо под стрелкой */
+  padding: 8px 0;      /* внутренний отступ сверху и снизу */
+  display: none;
+  min-width: 380px;    /* достаточная ширина */
+  box-sizing: border-box;
+  z-index: 20;
+}
+
+.main-nav .dropdown:hover .dropdown-menu,
+.main-nav .dropdown:focus-within .dropdown-menu {
+  display: block;
+}
+
+/* пункты */
+.main-nav .dropdown-menu li {
+  list-style: none;
+}
+.main-nav .dropdown-menu li a {
+  display: block;
+  padding: 14px 32px;  /* свои отступы */
+  font-size: 1.05em;
+  color: #222;
+  text-decoration: none;
+  background: #fff;
+  transition: background 0.15s;
+}
+.main-nav .dropdown-menu li.selected > a,
+.main-nav .dropdown-menu li a:hover {
+  background: #3c9;
+  color: #fff;
+}
+
+/* стрелочка */
+.main-nav .dropdown > button.active::before,
+.main-nav .dropdown > button:hover::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border-width: 0 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #3c9;
+  width: 0;
+  height: 0;
+  z-index: 22;
+}
+
+
+/* Для стрелочки под активным разделом меню */
+.main-nav .dropdown > button.active::before,
+.main-nav .dropdown > button:hover::before {
+  content: '';
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  transform: translateX(-50%);
+  border-width: 0 8px 8px 8px;
+  border-style: solid;
+  border-color: transparent transparent #3c9 transparent;
+  width: 0;
+  height: 0;
+  z-index: 22;
+}
+/* ==== style.css (в самый конец файла) ==== */
+.main-nav ul {
+  display: flex;
+  align-items: center;
+  list-style: none;
+  border-bottom: 1px solid #ddd;
+  padding: 0;
+  margin: 0 auto;
+  height: 60px;
+}
+
+
+/* Стили самой кнопки-переключателя */
+.btn-language {
+  display: inline-block;
+  padding: 10px 16px;
+  background-color: rgba(47, 163, 61, 0.755);
+  color: #fff;
+  border-radius: 10px;
+  text-decoration: none;
+  font-size: 1em;
+  font-weight: bold;
+  transition: background-color .2s;
+}
+.btn-language:hover {
+  background-color: #28a178;
+}
+/* === Результат перевірки посвідчення водія === */
+.check-result {
+  max-width: 500px;
+  margin: 150px auto;
+  text-align: center;
+}
+.check-result h2 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+.check-result .doc-info {
+  margin-bottom: 30px;
+}
+.check-result dl {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  row-gap: 8px;
+  column-gap: 16px;
+  justify-content: start;
+  text-align: left;
+}
+.check-result dt {
+  font-weight: bold;
+}
+.check-result dd {
+  margin: 0;
+}
+.result-action {
+  text-align: center;
+}
+.result-action .btn-success {
+  padding: 10px 30px;
+  font-size: 1em;
+}
+.lang-switch {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0 160px;
+  padding-top: 40px;
+}
+.btn-success {
+  /* оставляем «✓ Успіхи 2022» в одну строку */
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+.btn-success {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+/* разделитель между галочкой и текстом */
+.btn-success .text {
+  padding-left: 8px;               /* отступ слева */
+  border-left: 1px solid currentColor; /* полоса того же цвета, что и текст */
+  margin-left: 8px;                /* расстояние от галочки до полоски */
+}
+
+.logo-col .dots {
+  top: 0%;
+  left: 20px;                  /* подвинуть правее или левее */
+  transform: translateY(-55%);
+}
+/* Сузить страницу и центрировать */
+body {
+  max-width: 1200px;    /* или 1100px, 1000px — подберите под себя */
+  margin: 0 auto;       /* центр по горизонтали */
+  padding: 50px 20px 0; /* отступ сверху уже есть, 20px по бокам чтобы не прилипало в мобильном */
+}
+/* Убираем разделитель между телефоном и «Успіхи 2022» */
+.center-col {
+  border-right: none;
+}
+
+/* Переносим разделитель сразу за кнопку «Успіхи 2022» */
+.right-col .social-icons {
+  border-left: 1px solid #ddd;
+  padding-left: 16px; /* отступ от разделителя до иконок */
+  margin-left: 16px;  /* отступ от кнопки до разделителя */
+}
+/* увеличить высоту разделителя под гербом */
+.center-col {
+  /* добавляем сверху и снизу по 16px */
+  padding-top: 1px;
+  padding-bottom: 20px;
+}
+
+/* увеличить высоту разделителя перед соц. иконками */
+.right-col .social-icons {
+  /* слева граница уже есть, добавляем сверху/снизу */
+  padding-top: 1px;
+  padding-bottom: 20px;
+}
+/* рисуем разделитель после «Людям із порушенням зору» */
+.visually-link {
+  /* убираем, если был border-left */
+  /* border-left: none; */
+
+  /* рисуем border справа */
+  border-right: 1px solid #ddd;
+
+  /* отступы вокруг, чтобы линия тянулась выше и ниже текста */
+  padding-top: -10px;
+  padding-bottom: 10px;
+
+  /* расстояние от текста до разделителя */
+  padding-right: 16px;
+
+  /* если нужно отступ наружу, чтобы отделить от следующего элемента */
+  margin-right: 16px;
+}
+.visually-link {
+  display: flex;
+  flex-direction: column;
+  align-items: center;   /* центрируем каждую строку по горизонтали */
+  text-align: center;     /* центрируем текст внутри */
+  
+}
+.visually-link {
+  position: relative;    /* чтобы ::after позиционировался внутри .visually-link */
+  display: inline-flex;  /* строковый flex-блок, как в оригинале */
+  flex-direction: column;
+  align-items: center;   /* центрируем каждую строку по горизонтали */
+  text-align: center;    /* центрируем текст внутри */
+  padding: 0 20px;       /* отступ слева/справа от текста до линии */
+  margin-right: 1px;    /* отступ до следующего элемента (иконок) */
+  white-space: normal;   /* разрешаем переносы по словам */
+}
+/* в самый конец style.css */
+.search-item {
+  list-style: none;     /* убирает точку */
+  margin: 0;            /* сбрасываем отступ, если он был */
+  padding: 0;           /* тоже сбросим, чтобы не было лишних отступов справа */
+}
+/* В конец style.css */
+.search-btn svg circle,
+.search-btn svg line {
+  stroke-width: 3; /* вместо 2 сделайте 3, 4 и т.д. — подберите нужную «жирность» */
+}
+
+/* подсветка пунктов навигации при наведении */
+.main-nav button:hover {
+  background-color: #3c9; /* тот же зелёный, что и в оригинале */
+  color: #fff;
+}
+
+/* стрелочка под выпадашками тоже только на hover */
+.main-nav .dropdown > button:hover::before {
+  border-color: transparent transparent #3c9 transparent;
+}
+
+.main-nav .dropdown-menu li.corruption > a {
+  color: #d2232a;       
+  background: none;     
+}
+/* чуть уже и жирнее кнопка «Успіхи 2022» */
+.btn-success {
+  padding: 8px 20px;       /* вместо 10px 24px — чуть уже */
+  font-weight: 600;        /* чуть плотнее текст */
+  border-width: 3px;       /* чуть толще рамка */
+}
+
+/* отдельная настройка для галочки */
+.btn-success .icon {
+  font-size: 1.3em;        /* чуть больше значок */
+  font-weight: 700;        /* делаем галочку плотнее */
+  line-height: 1;          /* чтобы не «плыла» внутри */
+}
+/* ========== СТИЛИ ДЛЯ SECTION .check-result ========== */
+.check-result {
+  /* чуть поднимем секцию вверх и сузим её */
+  margin: 20px auto;      /* вместо 150px сверху будет 80px */
+  max-width: 700px;       /* ограничим ширину для текста */
+  padding: 0 40px;        /* отступы по бокам */
+}
+
+.check-result h2 {
+  /* заголовок */
+  margin-bottom: 30px;           /* пробел под ним */
+  font-size: 1.75em;             /* чуть побольше */
+  font-weight: 600;              /* чуть жирнее */
+  letter-spacing: 0.5px;         /* межбуквенный интервал */
+  text-align: center;            /* выравниваем по центру */
+}
+
+.check-result .doc-info p {
+  /* строка "Документ на ім'я" */
+  text-align: center;
+  margin-bottom: 50px;
+  font-size: 1em;
+  line-height: 1.4;
+}
+
+.check-result dl {
+  display: grid;
+  /* две колонки: заголовок и значение */
+  grid-template-columns: max-content 1fr;
+  column-gap: 100px;      /* расстояние между колонками */
+  row-gap: 6px;         /* расстояние между строками */
+}
+
+.check-result dt {
+  font-weight: 200;      /* делаем заголовки чуть жирнее */
+  line-height: 1.3;      /* плотнее межстрочный интервал */
+}
+
+.check-result dd {
+  margin: 0;             /* сбросим маргины */
+  line-height: 1.4;      /* чуть больше пространства для текста */
+}
+
+/* кнопка «ПОВЕРНУТИСЯ» */
+.result-action {
+  text-align: center;
+  margin-top: 10px;      /* отступ над кнопкой */
+}
+.result-action .btn-success {
+  padding: 10px 40px;    /* баланс ширины */
+  font-size: 1em;
+  font-weight: 600;      /* чуть жирнее текст */
+}
+/* Сбрасываем жирный шрифт для строки "Документ на ім'я" */
+.check-result .doc-info p strong {
+  font-weight: normal; /* или font-weight: 400; */
+}
+/* делаем жирным только первое значение в dl */
+.check-result dl dd:first-of-type {
+  font-weight: bold;
+}
+/* делаем и саму метку «Статус:», и её значение «ВИДАНИЙ» пожирнее */
+.check-result dl dt:first-of-type,
+.check-result dl dt:first-of-type + dd {
+  font-weight: 600; /* или 700 — подберите желаемую «жирность» */
+}
+.check-result dt .desc {
+  margin-left: 12px;  /* регулируй это значение как хочешь */
+  display: inline-block;
+}
+.check-result dt .desc {
+  margin-left: 30px;  /* регулируй это значение как хочешь */
+  display: inline-block;
+}
+/* ========== Табличная раскладка для результатов проверки ========== */
+.check-result .doc-info dl {
+  display: grid;
+  grid-template-columns: 10px   /* колонка для цифр */ 
+                        auto  /* колонка для описания */ 
+                        1fr   /* колонка для самих значений */;
+  column-gap: 2px;
+  row-gap:    0px;
+}
+
+/* чтобы спаны внутри <dt> стали direct-grid items */
+.check-result .doc-info dl dt {
+  display: contents;
+}
+
+/* Номера */
+.check-result .doc-info dl span.num {
+  grid-column: 1;
+  text-align:  right;
+  font-weight:  100;
+}
+
+/* Подписи «Дата видачі» и т. п. */
+.check-result .doc-info dl span.desc {
+  grid-column: 2;
+  text-align:  left;
+}
+
+/* Значения («2005-09-06», «ТСЦ 5644» и т. д.) */
+.check-result .doc-info dl dd {
+  grid-column: 3;
+  margin: 0;
+  padding: 0;
+}
+.check-result .doc-info dl dd {
+  grid-column: 3;    /* уже стоит */
+  margin: 0;
+  padding: 0 0 0 120px; 
+}
+/* Стили для кнопки «ПОВЕРНУТИСЯ» внизу */
+.result-action .btn-success {
+  background-color: rgba(78, 213, 132, 0.929);       /* основной зелёный фон */
+  color: #fff;                  /* белый текст */
+  border: 2px solid rgba(78, 213, 132, 0.929);       /* рамка того же цвета */
+  padding: 9px 60px;           /* при необходимости подкорректируй */
+  font-weight: bold;
+  border-radius: 40px;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+
+.result-action .btn-success:hover {
+  background-color: #2aab37;    /* чуть тёмнее при ховере */
+  border-color:    #35ab2a;
+}
+/* ========== FOOTER PANEL ========== */
+.site-footer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 20px;
+  background-color: #28a178; /* зелёный фон */
+  color: #fff;               /* белый текст */
+  padding: 40px 20px;
+  font-size: 0.95em;
+  line-height: 1.6;
+}
+
+.site-footer a {
+  color: #fff;
+  text-decoration: underline;
+}
+
+.site-footer .footer-col p {
+  margin: 0;
+}
+
+@media (max-width: 600px) {
+  .site-footer {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+}
+
+body { font-family: Arial, sans-serif; padding: 20px; }
+h1 { margin-bottom: 10px; }
+button { margin: 5px; }
+table { width: 100%; border-collapse: collapse; }
+th, td { border: 1px solid #ccc; padding: 8px; }
+/* --- Адаптация шапки --- */
+.header-top, .main-nav ul {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.header-top {
+  flex-direction: row;
+  gap: 20px;
+}
+.logo-col, .center-col, .right-col {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.main-nav ul {
+  gap: 8px;
+  padding: 0;
+  list-style: none;
+  margin: 0;
+}
+
+@media (max-width: 900px) {
+  .header-top {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+    padding: 10px 0;
+  }
+  .main-nav ul {
+    flex-direction: column;
+    gap: 0;
+  }
+  .main-nav ul > li {
+    width: 100%;
+    margin-bottom: 2px;
+  }
+  .main-nav button, .main-nav a {
+    width: 100%;
+    text-align: left;
+    padding: 12px 16px;
+    font-size: 1.05em;
+    border-radius: 0;
+    background: #f4f4f4;
+    border: none;
+    border-bottom: 1px solid #e1e1e1;
+  }
+  .dropdown-menu {
+    position: static !important;
+    box-shadow: none !important;
+    background: #fff;
+    border-radius: 0;
+    padding-left: 16px;
+  }
+}
+
+@media (max-width: 650px) {
+  .header-top, .main-nav ul {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .logo-col, .center-col, .right-col {
+    justify-content: center;
+    flex-direction: row;
+    gap: 6px;
+  }
+  .logo-col { margin-bottom: 6px; }
+  .crest { width: 40px; height: auto; }
+  .site-header, .main-nav, .lang-switch {
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+  .main-nav ul {
+    font-size: 1em;
+  }
+}
+
+@media (max-width: 440px) {
+  .logo-text div, .logo-text small { font-size: 0.95em; }
+  .main-nav ul > li { font-size: 0.97em; }
+}

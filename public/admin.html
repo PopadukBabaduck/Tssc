@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Адмінка користувачів</title>
+  <link rel="stylesheet" href="admin.css">
+  <style>
+    .admin-layout { display: flex; gap: 40px; align-items: flex-start; }
+    .user-list { width: 250px; background: #f4f4f4; border-radius: 10px; padding: 10px 0; min-height: 200px;}
+    .user-list li { padding: 8px 16px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
+    .user-list li:hover, .user-list li.active { background: #c1e7cb; }
+    .user-form { flex: 1; }
+    .form label { display: block; margin: 8px 0 4px; }
+    .form input[type="text"], .form input[type="date"] { width: 100%; padding: 6px; margin-bottom: 10px; }
+    .form-actions { margin-top: 16px; }
+    .btn { padding: 8px 18px; border: none; border-radius: 6px; background: #e4e4e4; cursor: pointer; }
+    .btn--primary { background: #2ecc71; color: white; }
+    .btn:not(:last-child) { margin-right: 10px; }
+    .btn-open { background: #3498db; color: #fff; font-size: 14px; margin-left: 12px; }
+
+    /* ---- Категории (динамические) ---- */
+    #categoriesList .form-row { display: flex; gap: 16px; align-items: flex-end; margin-bottom: 10px;}
+    #categoriesList label { flex: 1; margin-bottom: 0;}
+    #categoriesList .del-btn {
+      background: #ffeded; border: none; color: #d22a2a; border-radius: 6px;
+      font-size: 1.3em; cursor: pointer; padding: 4px 12px;
+      margin-left: 6px;
+      transition: background .18s;
+    }
+    #categoriesList .del-btn:hover { background: #ffe0e0;}
+    .add-cat-btn {
+      background: #2ecc71; color: #fff; border: none; border-radius: 7px;
+      font-size: 1.4em; cursor: pointer; padding: 4px 14px; margin-top: 5px;
+      transition: background .18s;
+    }
+    .add-cat-btn:hover { background: #1e874b; }
+
+    /* ---- Стили модального окна ---- */
+    #loginModal {
+      position: fixed; z-index: 1000; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(40,44,52,0.93);
+      display: flex; align-items: center; justify-content: center;
+      transition: opacity .3s;
+    }
+    .login-modal-window {
+      background: #fff;
+      padding: 38px 28px 26px;
+      border-radius: 18px;
+      box-shadow: 0 4px 40px rgba(0,0,0,0.18);
+      min-width: 340px;
+      text-align: center;
+      animation: modalIn .4s cubic-bezier(.4,2,.4,1);
+    }
+    @keyframes modalIn {
+      from { opacity:0; transform: scale(0.92);}
+      to   { opacity:1; transform: scale(1);}
+    }
+    #adminPass {
+      padding: 13px;
+      width: 85%;
+      font-size: 1.10em;
+      border-radius: 7px;
+      border: 1px solid #d1d5db;
+      outline: none;
+      margin: 20px 0 10px;
+    }
+    #loginError {
+      color: #d22a2a;
+      margin-top: 10px;
+      font-size: 1em;
+      min-height: 24px;
+    }
+    .login-modal-window button {
+      background: #27ae60;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 1.15em;
+      padding: 10px 44px;
+      margin-top: 6px;
+      cursor: pointer;
+      transition: background 0.18s;
+    }
+    .login-modal-window button:hover { background: #1e874b; }
+  </style>
+</head>
+<body>
+  <!-- Модальное окно авторизации (как в edit) -->
+  <div id="loginModal">
+    <div class="login-modal-window">
+      <h2 style="margin-bottom:12px;">Вхід в адмін-панель</h2>
+      <input type="password" id="adminPass" placeholder="Введіть пароль" autocomplete="off" />
+      <div>
+        <button onclick="checkPass()">Увійти</button>
+      </div>
+      <div id="loginError"></div>
+    </div>
+  </div>
+
+  <div class="container">
+    <h1 id="pageTitle">Адмінка користувачів</h1>
+    <div class="admin-layout">
+      <!-- Список пользователей -->
+      <ul class="user-list" id="userList">
+        <li style="text-align:center; color:#aaa;">Завантаження...</li>
+      </ul>
+
+      <!-- Форма -->
+      <form id="userForm" class="form user-form" autocomplete="off">
+        <input type="hidden" name="id">
+        <label>Документ на ім'я:
+          <input type="text" name="name" required>
+        </label>
+        <label>Статус:
+          <input type="text" name="status" required>
+        </label>
+        <label>Дата народження:
+          <input type="date" name="dob" required>
+        </label>
+        <label>Дата видачі:
+          <input type="date" name="issueDate" required>
+        </label>
+        <label>Дата закінчення строку дії:
+          <input type="date" name="expiryDate" required>
+        </label>
+        <label>Ким видано:
+          <input type="text" name="issuedBy" required>
+        </label>
+        <label>Серія та номер:
+          <input type="text" name="seriesNum" required>
+        </label>
+        <fieldset>
+          <legend>Категорії</legend>
+          <div id="categoriesList"></div>
+          <button type="button" class="add-cat-btn" onclick="addCategoryRow()">&#43;</button>
+        </fieldset>
+        <label>Обмеження:
+          <input type="text" name="restrictions" placeholder="—">
+        </label>
+        <div class="form-actions">
+          <button type="submit" class="btn btn--primary">Зберегти</button>
+          <button type="button" class="btn" id="clearBtn">Очистити</button>
+          <button type="button" class="btn" id="deleteBtn" style="display:none">Видалити</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  <script>
+    let users = [];
+    let currentId = null;
+
+    // ===== КАТЕГОРИИ: динамический список =====
+    const categoriesList = document.getElementById('categoriesList');
+
+    function categoryRow(idx, cat = '', date = '') {
+      return `
+      <div class="form-row" data-idx="${idx}">
+        <label>
+          Категорія:
+          <input type="text" name="categories[${idx}].cat" value="${cat}" placeholder="A${idx ? idx : ''}" required>
+        </label>
+        <label>
+          Дата видачі:
+          <input type="date" name="categories[${idx}].date" value="${date}">
+        </label>
+        <button type="button" class="del-btn" onclick="removeCategoryRow(${idx})" title="Видалити категорію">&#128465;</button>
+      </div>
+      `;
+    }
+
+    function addCategoryRow(cat='', date='') {
+      const rows = categoriesList.querySelectorAll('.form-row').length;
+      categoriesList.insertAdjacentHTML('beforeend', categoryRow(rows, cat, date));
+      updateDelBtns();
+    }
+
+    function removeCategoryRow(idx) {
+      const rows = Array.from(categoriesList.querySelectorAll('.form-row'));
+      if (rows.length <= 1) return; // Минимум одна строка
+      rows[idx]?.remove();
+      rebuildCategoriesIdx();
+      updateDelBtns();
+    }
+
+    function rebuildCategoriesIdx() {
+      const rows = categoriesList.querySelectorAll('.form-row');
+      rows.forEach((row, i) => {
+        row.dataset.idx = i;
+        row.querySelector('input[type="text"]').name = `categories[${i}].cat`;
+        row.querySelector('input[type="date"]').name = `categories[${i}].date`;
+        row.querySelector('.del-btn').setAttribute('onclick', `removeCategoryRow(${i})`);
+      });
+    }
+
+    function updateDelBtns() {
+      const delBtns = categoriesList.querySelectorAll('.del-btn');
+      delBtns.forEach(btn => btn.disabled = delBtns.length <= 1);
+    }
+
+    // ====== Список пользователей ======
+    async function loadUsers() {
+      users = await fetch('/api/users').then(r => r.json());
+      const ul = document.getElementById('userList');
+      ul.innerHTML = '';
+      if (!users.length) {
+        ul.innerHTML = '<li style="text-align:center;color:#aaa;">Немає користувачів</li>';
+        return;
+      }
+      users.forEach(u => {
+        const li = document.createElement('li');
+        li.textContent = u.name + ' (' + u.id + ')';
+        // Кнопка "Відкрити"
+        const btn = document.createElement('button');
+        btn.textContent = 'Відкрити';
+        btn.className = 'btn btn-open';
+        btn.type = 'button';
+        btn.onclick = (event) => {
+          event.stopPropagation();
+          window.open(`../index.html?id=${u.id}`, '_blank');
+        };
+        li.appendChild(btn);
+        li.onclick = () => selectUser(u.id);
+        if (u.id === currentId) li.classList.add('active');
+        ul.appendChild(li);
+      });
+    }
+
+    // ====== Выбор пользователя ======
+    async function selectUser(id) {
+      currentId = id;
+      const user = users.find(u => u.id === id);
+      if (!user) return;
+      const form = document.getElementById('userForm');
+      form.id.value = user.id || '';
+      form.name.value = user.name || '';
+      form.status.value = user.status || '';
+      form.dob.value = user.dob || '';
+      form.issueDate.value = user.issueDate || '';
+      form.expiryDate.value = user.expiryDate || '';
+      form.issuedBy.value = user.issuedBy || '';
+      form.seriesNum.value = user.seriesNum || '';
+      form.restrictions.value = user.restrictions || '';
+      // Категории
+      categoriesList.innerHTML = '';
+      if (Array.isArray(user.categories) && user.categories.length) {
+        user.categories.forEach((c, idx) => {
+          addCategoryRow(c.cat || '', c.date || '');
+        });
+      } else {
+        addCategoryRow();
+      }
+      document.getElementById('deleteBtn').style.display = '';
+      // выделяем выбранного
+      document.querySelectorAll('.user-list li').forEach(li => li.classList.remove('active'));
+      const lis = document.querySelectorAll('.user-list li');
+      for (let li of lis) {
+        if (li.textContent.startsWith(user.name + ' (' + user.id + ')')) {
+          li.classList.add('active');
+          break;
+        }
+      }
+    }
+
+    // ====== Очистка формы ======
+    function clearForm() {
+      currentId = null;
+      document.getElementById('userForm').reset();
+      categoriesList.innerHTML = '';
+      addCategoryRow();
+      document.getElementById('deleteBtn').style.display = 'none';
+      document.querySelectorAll('.user-list li').forEach(li => li.classList.remove('active'));
+    }
+
+    // ====== Сохранение ======
+    document.getElementById('userForm').onsubmit = async function(e) {
+      e.preventDefault();
+      const form = e.target;
+      // Собираем все категории
+      const catRows = categoriesList.querySelectorAll('.form-row');
+      const categories = Array.from(catRows).map(row => ({
+        cat: row.querySelector('input[type="text"]').value,
+        date: row.querySelector('input[type="date"]').value
+      }));
+      const data = {
+        name: form.name.value,
+        status: form.status.value,
+        dob: form.dob.value,
+        issueDate: form.issueDate.value,
+        expiryDate: form.expiryDate.value,
+        issuedBy: form.issuedBy.value,
+        seriesNum: form.seriesNum.value,
+        categories,
+        restrictions: form.restrictions.value
+      };
+      if (form.id.value) {
+        await fetch('/api/users/' + form.id.value, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      } else {
+        await fetch('/api/users', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+      }
+      clearForm();
+      await loadUsers();
+    };
+
+    // Кнопка очистки
+    document.getElementById('clearBtn').onclick = clearForm;
+
+    // Кнопка удаления пользователя
+    document.getElementById('deleteBtn').onclick = async function() {
+      const form = document.getElementById('userForm');
+      if (form.id.value && confirm('Видалити користувача?')) {
+        await fetch('/api/users/' + form.id.value, { method: 'DELETE' });
+        clearForm();
+        await loadUsers();
+      }
+    };
+
+    // Инициализация: одна категория по-умолчанию
+    window.addEventListener('DOMContentLoaded', () => {
+      if (!categoriesList.querySelector('.form-row')) addCategoryRow();
+    });
+
+    // ======= АВТОРИЗАЦИЯ =======
+    const REAL_PASS = "27082048";
+    function checkPass() {
+      const val = document.getElementById('adminPass').value;
+      if (val === REAL_PASS) {
+        sessionStorage.setItem('adminAuth', 'yes');
+        document.getElementById('loginModal').style.display = "none";
+        document.getElementById('loginError').textContent = '';
+        document.getElementById('adminPass').value = '';
+      } else {
+        document.getElementById('loginError').textContent = "Невірний пароль!";
+        document.getElementById('adminPass').value = '';
+        document.getElementById('adminPass').focus();
+      }
+    }
+    window.addEventListener('DOMContentLoaded', () => {
+      if (sessionStorage.getItem('adminAuth') !== 'yes') {
+        document.getElementById('loginModal').style.display = 'flex';
+        document.getElementById('adminPass').focus();
+      } else {
+        document.getElementById('loginModal').style.display = 'none';
+      }
+    });
+    document.getElementById('adminPass').addEventListener('keydown', e => {
+      if (e.key === 'Enter') checkPass();
+    });
+    // ====== загрузка пользователей ======
+    loadUsers();
+  </script>
+</body>
+</html>

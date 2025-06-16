@@ -1,0 +1,46 @@
+{
+  "users": [
+    {
+      "id": "4_TxMRxLGIRNlP2YL-81a",
+      "name": "Serch Bond",
+      "status": "ОЧІКУЄ НА ОТРИМАННЯ",
+      "dob": "1212-12-12",
+      "issueDate": "1212-12-12",
+      "expiryDate": "1212-12-12",
+      "issuedBy": "ТСЦ 6445",
+      "seriesNum": "ВХІ 568923",
+      "categories": [
+        {
+          "cat": "В",
+          "date": "2000-12-12"
+        },
+        {
+          "cat": "А",
+          "date": ""
+        }
+      ],
+      "restrictions": ""
+    },
+    {
+      "id": "to231pUIMGZvYBIMmsM1N",
+      "name": "Антон Антон АНТОН",
+      "status": "вапівапі",
+      "dob": "213414-03-12",
+      "issueDate": "1241-04-12",
+      "expiryDate": "124124-12-04",
+      "issuedBy": "пяівапр",
+      "seriesNum": "вапва",
+      "categories": [
+        {
+          "cat": "врпвіа",
+          "date": "275760-04-12"
+        },
+        {
+          "cat": "іріврів",
+          "date": "4124-12-04"
+        }
+      ],
+      "restrictions": "1"
+    }
+  ]
+}

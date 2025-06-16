@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Результат перевірки</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <section class="check-result">
+    <h2>Результат перевірки посвідчення водія:</h2>
+    <div class="doc-info">
+      <p><strong>Документ на ім'я:</strong>
+        <span id="fullName"></span>
+      </p>
+      <dl>
+        <dt>Статус:</dt>
+        <dd id="status"></dd>
+
+        <dt><span class="num">3</span> Дата народження:</dt>
+        <dd id="dob"></dd>
+
+        <dt><span class="num">4a</span> Дата видачі:</dt>
+        <dd id="issueDate"></dd>
+
+        <dt><span class="num">4b</span> Дата закінчення строку дії:</dt>
+        <dd id="expiryDate"></dd>
+
+        <dt><span class="num">4c</span> Ким видано:</dt>
+        <dd id="issuedBy"></dd>
+
+        <dt><span class="num">5</span> Серія та номер:</dt>
+        <dd id="seriesNum"></dd>
+
+        <dt><span class="num">9,10</span> Категорії:</dt>
+        <dd>
+          <span id="cat0"></span> — <span id="date0"></span><br>
+          <span id="cat1"></span> — <span id="date1"></span>
+        </dd>
+
+        <dt><span class="num">12</span> Обмеження:</dt>
+        <dd id="restrictions"></dd>
+      </dl>
+    </div>
+    <div class="result-action">
+      <button class="btn-success" onclick="history.back()">ПОВЕРНУТИСЯ</button>
+    </div>
+  </section>
+
+  <script>
+    (async function loadResult() {
+      const params = new URLSearchParams(location.search);
+      const id = params.get("id");
+      if (!id) {
+        document.body.innerHTML = "<p>Не вказано ID користувача.</p>";
+        return;
+      }
+      const res = await fetch(`/api/users/${id}`);
+      if (!res.ok) {
+        document.body.innerHTML = "<p>Користувача не знайдено.</p>";
+        return;
+      }
+      const u = await res.json();
+
+      document.getElementById("fullName").textContent    = u.name;
+      document.getElementById("status").textContent      = u.status;
+      document.getElementById("dob").textContent         = u.dob;
+      document.getElementById("issueDate").textContent   = u.issueDate;
+      document.getElementById("expiryDate").textContent  = u.expiryDate;
+      document.getElementById("issuedBy").textContent    = u.issuedBy;
+      document.getElementById("seriesNum").textContent   = u.seriesNum;
+
+      document.getElementById("cat0").textContent   = u.categories[0]?.cat || "";
+      document.getElementById("date0").textContent  = u.categories[0]?.date || "";
+      document.getElementById("cat1").textContent   = u.categories[1]?.cat || "";
+      document.getElementById("date1").textContent  = u.categories[1]?.date || "";
+
+      document.getElementById("restrictions").textContent = u.restrictions;
+    })();
+  </script>
+  <script>
+(async function(){
+  // 1. Считываем id из query-параметров
+  const params = new URLSearchParams(window.location.search);
+  const id = params.get('id');
+  if (!id) {
+    document.body.innerHTML = '<p>Не вказано ID користувача</p>';
+    return;
+  }
+
+  // 2. Делаем запрос к API
+  const res = await fetch('/api/users/' + id);
+  if (!res.ok) {
+    document.body.innerHTML = '<p>Користувача з таким ID не знайдено</p>';
+    return;
+  }
+  const u = await res.json();
+
+  // 3. Показываем данные на странице
+  // Предположим, в html у вас есть span#fullName, dd#status и т.д.
+  document.getElementById('fullName').textContent    = u.name;
+  document.getElementById('status').textContent      = u.status;
+  document.getElementById('birthDate').textContent   = u.dob;
+  document.getElementById('issueDate').textContent   = u.issueDate;
+  document.getElementById('expiryDate').textContent  = u.expiryDate;
+  document.getElementById('issuedBy').textContent    = u.issuedBy;
+  document.getElementById('seriesNum').textContent   = u.seriesNum;
+  // для категорий можно пройтись по массиву:
+  u.categories.forEach((c, i) => {
+    const dt = document.querySelector(`#cat${i} .cat`);
+    const dd = document.querySelector(`#cat${i} .date`);
+    if (dt) dt.textContent   = c.cat;
+    if (dd) dd.textContent   = c.date;
+  });
+  document.getElementById('restrictions').textContent = u.restrictions;
+})();
+</script>
+
+</body>
+</html>
