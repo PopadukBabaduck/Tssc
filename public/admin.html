@@ -2,7 +2,7 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Адмінка користувачів</title>
   <link rel="stylesheet" href="admin.css">
   <style>
@@ -41,7 +41,6 @@
       position: fixed; z-index: 1000; top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(40,44,52,0.93);
       display: flex; align-items: center; justify-content: center;
-      transition: opacity .3s;
     }
     .login-modal-window {
       background: #fff;
@@ -160,36 +159,35 @@
 
     function categoryRow(idx, cat = '', date = '') {
       return `
-      <div class="form-row" data-idx="${idx}">
-        <label>
-          Категорія:
-          <input type="text" name="categories[${idx}].cat" value="${cat}" placeholder="A${idx ? idx : ''}" required>
-        </label>
-        <label>
-          Дата видачі:
-          <input type="date" name="categories[${idx}].date" value="${date}">
-        </label>
-        <button type="button" class="del-btn" onclick="removeCategoryRow(${idx})" title="Видалити категорію">&#128465;</button>
-      </div>`;
+        <div class="form-row" data-idx="${idx}">
+          <label>
+            Категорія:
+            <input type="text" name="categories[${idx}].cat" value="${cat}" placeholder="A${idx}" required>
+          </label>
+          <label>
+            Дата видачі:
+            <input type="date" name="categories[${idx}].date" value="${date}">
+          </label>
+          <button type="button" class="del-btn" onclick="removeCategoryRow(${idx})" title="Видалити категорію">🗑️</button>
+        </div>`;
     }
 
     function addCategoryRow(cat = '', date = '') {
-      const rows = categoriesList.querySelectorAll('.form-row').length;
-      categoriesList.insertAdjacentHTML('beforeend', categoryRow(rows, cat, date));
+      const idx = categoriesList.querySelectorAll('.form-row').length;
+      categoriesList.insertAdjacentHTML('beforeend', categoryRow(idx, cat, date));
       updateDelBtns();
     }
 
     function removeCategoryRow(idx) {
       const rows = Array.from(categoriesList.querySelectorAll('.form-row'));
       if (rows.length <= 1) return;
-      rows[idx]?.remove();
+      rows[idx].remove();
       rebuildCategoriesIdx();
       updateDelBtns();
     }
 
     function rebuildCategoriesIdx() {
-      const rows = categoriesList.querySelectorAll('.form-row');
-      rows.forEach((row, i) => {
+      categoriesList.querySelectorAll('.form-row').forEach((row, i) => {
         row.dataset.idx = i;
         row.querySelector('input[type="text"]').name = `categories[${i}].cat`;
         row.querySelector('input[type="date"]').name = `categories[${i}].date`;
@@ -202,28 +200,29 @@
       delBtns.forEach(btn => btn.disabled = delBtns.length <= 1);
     }
 
-    // ====== Список пользователей ======
+    // ====== Загрузка списка пользователей ======
     async function loadUsers() {
-      users = await fetch(`/api/users`);
-await fetch(`/api/users/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${BASE_URL}/api/users`);
+      users = await res.json();
 
       const ul = document.getElementById('userList');
       ul.innerHTML = '';
+
       if (!users.length) {
         ul.innerHTML = '<li style="text-align:center;color:#aaa;">Немає користувачів</li>';
         return;
       }
+
       users.forEach(u => {
         const li = document.createElement('li');
-        li.textContent = u.name + ' (' + u.id + ')';
+        li.textContent = `${u.name} (${u.id})`;
         const btn = document.createElement('button');
         btn.textContent = 'Відкрити';
         btn.className = 'btn btn-open';
         btn.type = 'button';
-        btn.onclick = event => {
-          event.stopPropagation();
-        window.open(`index.html?id=${u.id}`, '_blank');
-
+        btn.onclick = e => {
+          e.stopPropagation();
+          window.open(`${BASE_URL}/index.html?id=${u.id}`, '_blank');
         };
         li.appendChild(btn);
         li.onclick = () => selectUser(u.id);
@@ -233,12 +232,13 @@ await fetch(`/api/users/${id}`, { method: 'DELETE' });
     }
 
     // ====== Выбор пользователя ======
-    async function selectUser(id) {
+    function selectUser(id) {
       currentId = id;
       const user = users.find(u => u.id === id);
       if (!user) return;
+
       const form = document.getElementById('userForm');
-      form.id.value = user.id || '';
+      form.id.value = user.id;
       form.name.value = user.name || '';
       form.status.value = user.status || '';
       form.dob.value = user.dob || '';
@@ -249,19 +249,16 @@ await fetch(`/api/users/${id}`, { method: 'DELETE' });
       form.restrictions.value = user.restrictions || '';
 
       categoriesList.innerHTML = '';
-      if (Array.isArray(user.categories) && user.categories.length) {
-        user.categories.forEach((c, idx) => addCategoryRow(c.cat || '', c.date || ''));
-      } else {
-        addCategoryRow();
-      }
+      (user.categories && user.categories.length
+        ? user.categories
+        : [ {} ]
+      ).forEach((c, i) => addCategoryRow(c.cat || '', c.date || ''));
 
       document.getElementById('deleteBtn').style.display = '';
-      document.querySelectorAll('.user-list li').forEach(li => li.classList.remove('active'));
-      document.querySelectorAll('.user-list li').forEach(li => {
-        if (li.textContent.startsWith(user.name + ' (' + user.id + ')')) {
-          li.classList.add('active');
-        }
-      });
+      document.querySelectorAll('.user-list li').forEach(li => li.classList.toggle(
+        'active',
+        li.textContent.startsWith(`${user.name} (${user.id})`)
+      ));
     }
 
     // ====== Очистка формы ======
@@ -274,16 +271,17 @@ await fetch(`/api/users/${id}`, { method: 'DELETE' });
       document.querySelectorAll('.user-list li').forEach(li => li.classList.remove('active'));
     }
 
-    // ====== Сохранение ======
-    document.getElementById('userForm').onsubmit = async function(e) {
+    // ====== Сохранение пользователя ======
+    document.getElementById('userForm').onsubmit = async e => {
       e.preventDefault();
       const form = e.target;
       const catRows = categoriesList.querySelectorAll('.form-row');
-      const categories = Array.from(catRows).map(row => ({
-        cat: row.querySelector('input[type="text"]').value,
-        date: row.querySelector('input[type="date"]').value
+      const categories = Array.from(catRows).map(r => ({
+        cat: r.querySelector('input[type="text"]').value,
+        date: r.querySelector('input[type="date"]').value
       }));
-      const data = {
+
+      const payload = {
         name: form.name.value,
         status: form.status.value,
         dob: form.dob.value,
@@ -299,10 +297,11 @@ await fetch(`/api/users/${id}`, { method: 'DELETE' });
         ? `${BASE_URL}/api/users/${form.id.value}`
         : `${BASE_URL}/api/users`;
       const method = form.id.value ? 'PUT' : 'POST';
+
       await fetch(url, {
         method,
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
+        body: JSON.stringify(payload)
       });
 
       clearForm();
@@ -310,7 +309,7 @@ await fetch(`/api/users/${id}`, { method: 'DELETE' });
     };
 
     // ====== Удаление пользователя ======
-    document.getElementById('deleteBtn').onclick = async function() {
+    document.getElementById('deleteBtn').onclick = async () => {
       const form = document.getElementById('userForm');
       if (form.id.value && confirm('Видалити користувача?')) {
         await fetch(`${BASE_URL}/api/users/${form.id.value}`, { method: 'DELETE' });
@@ -319,25 +318,17 @@ await fetch(`/api/users/${id}`, { method: 'DELETE' });
       }
     };
 
-    // ====== Инициализация ======
-    window.addEventListener('DOMContentLoaded', () => {
-      if (!categoriesList.querySelector('.form-row')) addCategoryRow();
-    });
-
-    // ====== АВТОРИЗАЦИЯ ======
+    // ====== Авторизация ======
     const REAL_PASS = "27082048";
     function checkPass() {
       const val = document.getElementById('adminPass').value;
       if (val === REAL_PASS) {
         sessionStorage.setItem('adminAuth', 'yes');
-        document.getElementById('loginModal').style.display = "none";
-        document.getElementById('loginError').textContent = '';
-        document.getElementById('adminPass').value = '';
+        document.getElementById('loginModal').style.display = 'none';
       } else {
         document.getElementById('loginError').textContent = "Невірний пароль!";
-        document.getElementById('adminPass').value = '';
-        document.getElementById('adminPass').focus();
       }
+      document.getElementById('adminPass').value = '';
     }
     window.addEventListener('DOMContentLoaded', () => {
       if (sessionStorage.getItem('adminAuth') !== 'yes') {
@@ -345,14 +336,13 @@ await fetch(`/api/users/${id}`, { method: 'DELETE' });
         document.getElementById('adminPass').focus();
       } else {
         document.getElementById('loginModal').style.display = 'none';
+        addCategoryRow();
+        loadUsers();
       }
+      document.getElementById('adminPass').addEventListener('keydown', e => {
+        if (e.key === 'Enter') checkPass();
+      });
     });
-    document.getElementById('adminPass').addEventListener('keydown', e => {
-      if (e.key === 'Enter') checkPass();
-    });
-
-    // ====== Загрузка пользователей ======
-    loadUsers();
   </script>
 </body>
 </html>
