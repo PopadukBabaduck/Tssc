@@ -53,8 +53,8 @@
       animation: modalIn .4s cubic-bezier(.4,2,.4,1);
     }
     @keyframes modalIn {
-      from { opacity:0; transform: scale(0.92);}
-      to   { opacity:1; transform: scale(1);}
+      from { opacity:0; transform: scale(0.92); }
+      to   { opacity:1; transform: scale(1); }
     }
     #adminPass {
       padding: 13px;
@@ -87,7 +87,7 @@
   </style>
 </head>
 <body>
-  <!-- Модальное окно авторизации (как в edit) -->
+  <!-- Модальное окно авторизации -->
   <div id="loginModal">
     <div class="login-modal-window">
       <h2 style="margin-bottom:12px;">Вхід в адмін-панель</h2>
@@ -147,7 +147,11 @@
       </form>
     </div>
   </div>
+
   <script>
+    // Базовый адрес вашего сервиса
+    const BASE_URL = 'https://tssc.onrender.com';
+
     let users = [];
     let currentId = null;
 
@@ -166,11 +170,10 @@
           <input type="date" name="categories[${idx}].date" value="${date}">
         </label>
         <button type="button" class="del-btn" onclick="removeCategoryRow(${idx})" title="Видалити категорію">&#128465;</button>
-      </div>
-      `;
+      </div>`;
     }
 
-    function addCategoryRow(cat='', date='') {
+    function addCategoryRow(cat = '', date = '') {
       const rows = categoriesList.querySelectorAll('.form-row').length;
       categoriesList.insertAdjacentHTML('beforeend', categoryRow(rows, cat, date));
       updateDelBtns();
@@ -178,7 +181,7 @@
 
     function removeCategoryRow(idx) {
       const rows = Array.from(categoriesList.querySelectorAll('.form-row'));
-      if (rows.length <= 1) return; // Минимум одна строка
+      if (rows.length <= 1) return;
       rows[idx]?.remove();
       rebuildCategoriesIdx();
       updateDelBtns();
@@ -201,7 +204,7 @@
 
     // ====== Список пользователей ======
     async function loadUsers() {
-      users = await fetch('/api/users').then(r => r.json());
+      users = await fetch(`${BASE_URL}/api/users`).then(r => r.json());
       const ul = document.getElementById('userList');
       ul.innerHTML = '';
       if (!users.length) {
@@ -211,14 +214,13 @@
       users.forEach(u => {
         const li = document.createElement('li');
         li.textContent = u.name + ' (' + u.id + ')';
-        // Кнопка "Відкрити"
         const btn = document.createElement('button');
         btn.textContent = 'Відкрити';
         btn.className = 'btn btn-open';
         btn.type = 'button';
-        btn.onclick = (event) => {
+        btn.onclick = event => {
           event.stopPropagation();
-          window.open(`../index.html?id=${u.id}`, '_blank');
+          window.open(`${BASE_URL}/index.html?id=${u.id}`, '_blank');
         };
         li.appendChild(btn);
         li.onclick = () => selectUser(u.id);
@@ -242,25 +244,21 @@
       form.issuedBy.value = user.issuedBy || '';
       form.seriesNum.value = user.seriesNum || '';
       form.restrictions.value = user.restrictions || '';
-      // Категории
+
       categoriesList.innerHTML = '';
       if (Array.isArray(user.categories) && user.categories.length) {
-        user.categories.forEach((c, idx) => {
-          addCategoryRow(c.cat || '', c.date || '');
-        });
+        user.categories.forEach((c, idx) => addCategoryRow(c.cat || '', c.date || ''));
       } else {
         addCategoryRow();
       }
+
       document.getElementById('deleteBtn').style.display = '';
-      // выделяем выбранного
       document.querySelectorAll('.user-list li').forEach(li => li.classList.remove('active'));
-      const lis = document.querySelectorAll('.user-list li');
-      for (let li of lis) {
+      document.querySelectorAll('.user-list li').forEach(li => {
         if (li.textContent.startsWith(user.name + ' (' + user.id + ')')) {
           li.classList.add('active');
-          break;
         }
-      }
+      });
     }
 
     // ====== Очистка формы ======
@@ -277,7 +275,6 @@
     document.getElementById('userForm').onsubmit = async function(e) {
       e.preventDefault();
       const form = e.target;
-      // Собираем все категории
       const catRows = categoriesList.querySelectorAll('.form-row');
       const categories = Array.from(catRows).map(row => ({
         cat: row.querySelector('input[type="text"]').value,
@@ -294,34 +291,37 @@
         categories,
         restrictions: form.restrictions.value
       };
-      if (form.id.value) {
-        await fetch('/api/users/' + form.id.value, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-      } else {
-        await fetch('/api/users', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
-      }
+
+      const url = form.id.value
+        ? `${BASE_URL}/api/users/${form.id.value}`
+        : `${BASE_URL}/api/users`;
+      const method = form.id.value ? 'PUT' : 'POST';
+      await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
       clearForm();
       await loadUsers();
     };
 
-    // Кнопка очистки
-    document.getElementById('clearBtn').onclick = clearForm;
-
-    // Кнопка удаления пользователя
+    // ====== Удаление пользователя ======
     document.getElementById('deleteBtn').onclick = async function() {
       const form = document.getElementById('userForm');
       if (form.id.value && confirm('Видалити користувача?')) {
-        await fetch('/api/users/' + form.id.value, { method: 'DELETE' });
+        await fetch(`${BASE_URL}/api/users/${form.id.value}`, { method: 'DELETE' });
         clearForm();
         await loadUsers();
       }
     };
 
-    // Инициализация: одна категория по-умолчанию
+    // ====== Инициализация ======
     window.addEventListener('DOMContentLoaded', () => {
       if (!categoriesList.querySelector('.form-row')) addCategoryRow();
     });
 
-    // ======= АВТОРИЗАЦИЯ =======
+    // ====== АВТОРИЗАЦИЯ ======
     const REAL_PASS = "27082048";
     function checkPass() {
       const val = document.getElementById('adminPass').value;
@@ -347,7 +347,8 @@
     document.getElementById('adminPass').addEventListener('keydown', e => {
       if (e.key === 'Enter') checkPass();
     });
-    // ====== загрузка пользователей ======
+
+    // ====== Загрузка пользователей ======
     loadUsers();
   </script>
 </body>

@@ -44,7 +44,7 @@
   </form>
 
   <script>
-    // Модальное окно пароля
+    // ===== АВТОРИЗАЦИЯ =====
     const REAL_PASS = "27082048";
     function checkPass() {
       const val = document.getElementById('adminPass').value.trim();
@@ -61,7 +61,7 @@
     }
     window.addEventListener('DOMContentLoaded', () => {
       document.getElementById('loginModal').style.display = 'flex';
-      setTimeout(()=>{ document.getElementById('adminPass').focus(); }, 80);
+      setTimeout(() => document.getElementById('adminPass').focus(), 80);
       document.body.style.overflow = "hidden";
     });
     document.addEventListener('keydown', e => {
@@ -70,6 +70,54 @@
       }
     });
   </script>
+
+  <!-- Подключаем ваш старый script.js (если он нужен) -->
   <script src="script.js"></script>
+
+  <script>
+    // ===== ГЛОБАЛЬНАЯ КОНФИГУРАЦИЯ =====
+    const BASE_URL = 'https://tssc.onrender.com';
+
+    // ===== ОБРАБОТЧИК СОХРАНЕНИЯ НОВОГО ПОЛЬЗОВАТЕЛЯ =====
+    document.getElementById('userForm').addEventListener('submit', async function(e) {
+      e.preventDefault();
+      const form = e.target;
+
+      // Собираем категории в массив
+      const categories = [
+        {
+          cat: form['categories[0].cat'].value,
+          date: form['categories[0].date'].value
+        },
+        {
+          cat: form['categories[1].cat'].value,
+          date: form['categories[1].date'].value
+        }
+      ];
+
+      // Формируем тело запроса
+      const data = {
+        name: form.name.value,
+        status: form.status.value,
+        dob: form.dob.value,
+        issueDate: form.issueDate.value,
+        expiryDate: form.expiryDate.value,
+        issuedBy: form.issuedBy.value,
+        seriesNum: form.seriesNum.value,
+        categories,
+        restrictions: form.restrictions.value
+      };
+
+      // POST на ваш API
+      await fetch(`${BASE_URL}/api/users`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      // После создания — редиректим в админку
+      window.location.href = `${BASE_URL}/admin.html`;
+    });
+  </script>
 </body>
 </html>
