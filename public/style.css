@@ -690,27 +690,29 @@ th, td { border: 1px solid #ccc; padding: 8px; }
   .logo-text div, .logo-text small { font-size: 0.95em; }
   .main-nav ul > li { font-size: 0.97em; }
 }
-/* ==== Mobile: оставить только логотип и герб ==== */
+/* ==== Mobile-адаптация: оставить только логотип и герб ==== */
 @media (max-width: 768px) {
-  /* 1) Скрыть все прямые дети <body>, кроме шапки */
+  /* Скрыть всё в <body>, кроме .site-header */
   body > *:not(.site-header) {
     display: none !important;
   }
 
-  /* 2) Сама шапка центруется и упрощается */
+  /* Упростить шапку */
   .site-header {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
     padding: 1rem !important;
-    text-align: center !important;
   }
   .site-header .header-top {
+    display: flex !important;
     flex-direction: column !important;
     align-items: center !important;
     justify-content: center !important;
     gap: 0.5rem !important;
   }
 
-  /* 3) Прячем лишние куски внутри шапки */
+  /* Скрыть внутри шапки всё, кроме лого и герба */
   .site-header .right-col,
   .site-header .center-col .phone,
   .site-header .main-nav,
@@ -722,17 +724,16 @@ th, td { border: 1px solid #ccc; padding: 8px; }
     display: none !important;
   }
 
-  /* 4) Крупнее и по-центру — текст логотипа */
+  /* Логотип крупнее и по центру */
   .site-header .logo-text {
     font-size: 1.8em !important;
-    margin-bottom: 0.5rem !important;
+    text-align: center !important;
   }
 
-  /* 5) Герб по-центру */
+  /* Герб по центру и видимый */
   .site-header .crest {
     display: block !important;
-    margin: 0 auto 1rem !important;
     width: 80px !important;
-    height: auto !important;
+    margin: 0.5rem auto !important;
   }
 }
