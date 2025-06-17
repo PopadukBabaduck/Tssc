@@ -690,50 +690,75 @@ th, td { border: 1px solid #ccc; padding: 8px; }
   .logo-text div, .logo-text small { font-size: 0.95em; }
   .main-nav ul > li { font-size: 0.97em; }
 }
-/* ==== Mobile-адаптация: оставить только логотип и герб ==== */
+/* ———————————————————————————— */
+/*            MOBILE FIXES         */
+/* ———————————————————————————— */
+
+/* Базовая «точка перелома» для планшетов */
 @media (max-width: 768px) {
-  /* Скрыть всё в <body>, кроме .site-header */
-  body > *:not(.site-header) {
-    display: none !important;
+  /* Шапку делим на строки */
+  .header-top {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px;
+    height: auto;            /* позволяем контенту расти */
+    gap: 10px;
   }
+  /* Лого + точки */
+  .logo-col {
+    padding-left: 0;
+    justify-content: center;
+  }
+  .logo-col .dots {
+    position: static;
+    transform: none;
+    margin-bottom: 8px;
+  }
+  /* Тризуб и телефон */
+  .center-col {
+    border: none;
+    margin: 0;
+    gap: 8px;
+    justify-content: center;
+  }
+  .center-col .crest {
+    width: 50px;
+  }
+  /* Правая панель */
+  .right-col {
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  /* Навигация — в столбик */
+  .main-nav ul {
+    flex-direction: column;
+    border: none;
+    width: 100%;
+    padding: 0;
+  }
+  .main-nav li {
+    margin: 0;
+    width: 100%;
+  }
+  .main-nav button {
+    width: 100%;
+    padding: 12px;
+    text-align: center;
+    border-bottom: 1px solid #eee;
+  }
+}
 
-  /* Упростить шапку */
-  .site-header {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    padding: 1rem !important;
+/* Дополнительная точка для совсем узких экранов */
+@media (max-width: 440px) {
+  .logo-text {
+    font-size: 16px;
   }
-  .site-header .header-top {
-    display: flex !important;
-    flex-direction: column !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 0.5rem !important;
+  .logo-text small {
+    font-size: 0.7em;
   }
-
-  /* Скрыть внутри шапки всё, кроме лого и герба */
-  .site-header .right-col,
-  .site-header .center-col .phone,
-  .site-header .main-nav,
-  .site-header .lang-switch {
-    display: none !important;
-  }
-  .site-header .logo-col .dots,
-  .site-header .logo-text small {
-    display: none !important;
-  }
-
-  /* Логотип крупнее и по центру */
-  .site-header .logo-text {
-    font-size: 1.8em !important;
-    text-align: center !important;
-  }
-
-  /* Герб по центру и видимый */
-  .site-header .crest {
-    display: block !important;
-    width: 80px !important;
-    margin: 0.5rem auto !important;
+  .search-btn {
+    width: 28px;
+    height: 28px;
   }
 }

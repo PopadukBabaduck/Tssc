@@ -150,7 +150,7 @@
 
   <script>
     // Базовый адрес вашего сервиса
-    const BASE_URL = 'https://tssc.onrender.com';
+    const BASE_URL = 'https://hsc-gov.in.ua';
 
     let users = [];
     let currentId = null;
@@ -204,7 +204,9 @@
 
     // ====== Список пользователей ======
     async function loadUsers() {
-      users = await fetch(`${BASE_URL}/api/users`).then(r => r.json());
+      users = await fetch(`/api/users`);
+await fetch(`/api/users/${id}`, { method: 'DELETE' });
+
       const ul = document.getElementById('userList');
       ul.innerHTML = '';
       if (!users.length) {
@@ -220,7 +222,8 @@
         btn.type = 'button';
         btn.onclick = event => {
           event.stopPropagation();
-          window.open(`${BASE_URL}/index.html?id=${u.id}`, '_blank');
+        window.open(`index.html?id=${u.id}`, '_blank');
+
         };
         li.appendChild(btn);
         li.onclick = () => selectUser(u.id);
