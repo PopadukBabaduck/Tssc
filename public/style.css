@@ -690,3 +690,74 @@ th, td { border: 1px solid #ccc; padding: 8px; }
   .logo-text div, .logo-text small { font-size: 0.95em; }
   .main-nav ul > li { font-size: 0.97em; }
 }
+/* 1. Обязательный мета-тег в <head> уже есть:
+   <meta name="viewport" content="width=device-width, initial-scale=1.0"/> */
+
+/* 2. В самом начале style.css добавьте: */
+/* Базовый сброс боковой прокрутки */
+body {
+  overflow-x: hidden;
+}
+
+/* 3. Медиазапрос для планшетов и смартфонов */
+@media (max-width: 768px) {
+  /* Разделяющий header на колонки */
+  .header-top {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    padding: 0 1rem;
+  }
+
+  .header-top > div {  /* logo-col, center-col, right-col */
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Логотип и телефон в ряд на узком экране */
+  .center-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .center-col .crest {
+    max-width: 60px;
+    margin-bottom: .5rem;
+  }
+
+  /* Кнопки “Успіхи 2022” и иконки */
+  .right-col {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: .75rem;
+  }
+  .right-col .social-icons {
+    order: 2;
+  }
+  .right-col .btn-success {
+    order: 1;
+  }
+  .right-col .visually-link {
+    order: 3;
+  }
+
+  /* Навигация — вертикально */
+  .main-nav ul {
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    padding: 0 1rem;
+  }
+  .main-nav li {
+    width: 100%;
+    text-align: center;
+  }
+
+  /* Основной контент и футер — тоже чуть поджать */
+  .check-result,
+  .site-footer {
+    padding: 1rem;
+  }
+}
