@@ -690,3 +690,49 @@ th, td { border: 1px solid #ccc; padding: 8px; }
   .logo-text div, .logo-text small { font-size: 0.95em; }
   .main-nav ul > li { font-size: 0.97em; }
 }
+/* ==== Mobile: оставить только логотип и герб ==== */
+@media (max-width: 768px) {
+  /* 1) Скрыть все прямые дети <body>, кроме шапки */
+  body > *:not(.site-header) {
+    display: none !important;
+  }
+
+  /* 2) Сама шапка центруется и упрощается */
+  .site-header {
+    display: block !important;
+    padding: 1rem !important;
+    text-align: center !important;
+  }
+  .site-header .header-top {
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 0.5rem !important;
+  }
+
+  /* 3) Прячем лишние куски внутри шапки */
+  .site-header .right-col,
+  .site-header .center-col .phone,
+  .site-header .main-nav,
+  .site-header .lang-switch {
+    display: none !important;
+  }
+  .site-header .logo-col .dots,
+  .site-header .logo-text small {
+    display: none !important;
+  }
+
+  /* 4) Крупнее и по-центру — текст логотипа */
+  .site-header .logo-text {
+    font-size: 1.8em !important;
+    margin-bottom: 0.5rem !important;
+  }
+
+  /* 5) Герб по-центру */
+  .site-header .crest {
+    display: block !important;
+    margin: 0 auto 1rem !important;
+    width: 80px !important;
+    height: auto !important;
+  }
+}
