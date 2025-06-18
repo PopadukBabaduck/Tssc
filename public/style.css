@@ -690,54 +690,71 @@ th, td { border: 1px solid #ccc; padding: 8px; }
   .logo-text div, .logo-text small { font-size: 0.95em; }
   .main-nav ul > li { font-size: 0.97em; }
 }
-/* меню */
-.main-nav ul {
-  display:flex;
-  flex-wrap:wrap;
-  gap:8px;
-  list-style:none;
-  background:#fff;
-  border-bottom:1px solid #ddd;
-  margin:20px 0;
-  padding:0 20px;
+@media (max-width: 650px) {
+  /* Шапка становится проще: скрываем средний и правый блоки */
+  .header-top .center-col,
+  .header-top .right-col {
+    display: none;
+  }
+
+  /* Логотип выравниваем слева */
+  .header-top .logo-col {
+    justify-content: flex-start;
+    padding-left: 35px;
+  }
+
+  /* 2) В CSS ниже оставим её видимой */
+  .header-top > .search-btn {
+    display: block;
+    margin-left: auto;
+    margin-right: 20px;
+  }
+
+  /* Убираем паддинги и выравниваем по центру высоту */
+  .header-top {
+    padding: 0 0;
+    height: 100px;
+  }
 }
-.main-nav li { position:relative }
-.main-nav button {
-  flex:1;
-  background:none;
-  border:none;
-  padding:12px;
-  font-size:1em;
-  text-transform:uppercase;
-  cursor:pointer;
-  color:#222;
-  transition:.2s;
+/* ========== BURGER BUTTON ========== */
+.nav-toggle {
+  display: none;            /* по-умолчанию скрыта на больших экранах */
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 10px;
+  margin-right: 20px;       /* отступ до правого края */
+  z-index: 100;             /* чтобы была над навигацией */
 }
-.main-nav button:hover,
-.main-nav button.active {
-  background:#3c9;
-  color:#fff;
+
+.nav-toggle .bar {
+  display: block;
+  width: 24px;
+  height: 3px;
+  margin: 4px 0;
+  background-color: #222;   /* цвет линий */
+  transition: transform .3s, opacity .3s;
 }
-/* выпадашки */
-.main-nav .dropdown-menu {
-  position:absolute;
-  top:100%; left:0;
-  min-width:200px;
-  background:#fff;
-  border:1px solid #ddd;
-  box-shadow:0 4px 12px rgba(0,0,0,.1);
-  border-radius:6px;
-  display:none;
-  z-index:10;
+
+/* Показываем бургер на мобилке */
+@media (max-width: 900px) {
+  .nav-toggle {
+    display: block;
+  }
 }
-.main-nav .dropdown:hover .dropdown-menu { display:block }
-.dropdown-menu li a {
-  display:block;
-  padding:10px 16px;
-  text-decoration:none;
-  color:#222;
+
+/* Когда меню открыто, превращаем гамбургер в крестик */
+.nav-toggle.open .bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
 }
-.dropdown-menu li a:hover,
-.dropdown-menu li.selected>a {
-  background:#3c9; color:#fff;
+.nav-toggle.open .bar:nth-child(2) {
+  opacity: 0;
+}
+.nav-toggle.open .bar:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+html, body {
+  max-width: 100vw;   
+  overflow-x: hidden;  
 }

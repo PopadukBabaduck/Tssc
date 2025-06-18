@@ -5,11 +5,37 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Головний сервісний центр</title>
   <link rel="stylesheet" href="style.css">
+  <!-- ===== Патч для мобильного меню ===== -->
+  <style>
+    @media (max-width: 900px) {
+      /* Скрываем основное меню по-умолчанию и показываем при классе .open */
+      .main-nav {
+        display: none;
+      }
+      .main-nav.open {
+        display: block;
+      }
+
+      /* Выпадашки теперь в потоке (под кнопкой) и скрыты по-умолчанию */
+      .main-nav .dropdown-menu {
+        position: static !important;
+        top: auto !important;
+        left: auto !important;
+        box-shadow: none;
+        padding-left: 20px;  /* чтобы было видно вложенность */
+        display: none;
+      }
+      /* Показываем, когда у <li class="dropdown"> есть класс .open */
+      .main-nav .dropdown.open > .dropdown-menu {
+        display: block;
+      }
+    }
+  </style>
 </head>
 <body>
   <header class="site-header">
     <div class="header-top">
-      <!-- Левый блок -->
+      <!-- Логотип -->
       <div class="logo-col">
         <div class="dots">
           <span></span><span></span><span></span>
@@ -21,42 +47,45 @@
           <small>МВС</small>
         </div>
       </div>
-      <!-- Средний блок -->
+              <button class="search-btn" aria-label="Пошук">
+          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+            <circle cx="11" cy="11" r="8" stroke="#333" stroke-width="2" fill="none"/>
+            <line x1="16" y1="16" x2="22" y2="22" stroke="#333" stroke-width="2"/>
+          </svg>
+        </button>
+      <!-- Герб + телефон -->
       <div class="center-col">
         <img src="gerb.png" alt="Тризуб" class="crest">
         <a href="tel:+0442901988" class="phone">(044)&nbsp;290-19-88</a>
       </div>
-      <!-- Правый блок -->
+      <!-- Кнопки справа -->
       <div class="right-col">
         <a href="#" class="btn-success">
           <span class="icon">✓</span>
           <span class="text">Успіхи 2022</span>
         </a>
         <div class="social-icons">
-          <a href="https://opendata.hsc.gov.ua/"><img src="fab.png"   alt="Facebook"></a>
-          <a href="https://opendata.hsc.gov.ua/"><img src="inst.png" alt="Instagram"></a>
-          <a href="https://opendata.hsc.gov.ua/"><img src="you.png"   alt="YouTube"></a>
-          <a href="https://opendata.hsc.gov.ua/"><img src="tgg.png"   alt="Telegram"></a>
+          <a href="#"><img src="fab.png" alt="Facebook"></a>
+          <a href="#"><img src="inst.png" alt="Instagram"></a>
+          <a href="#"><img src="you.png" alt="YouTube"></a>
+          <a href="#"><img src="tgg.png" alt="Telegram"></a>
         </div>
-        <a href="https://opendata.hsc.gov.ua/" class="visually-link">
+        <a href="#" class="visually-link">
           <img src="gl.png" alt="Для людей із порушенням зору">
           <span>
-            <div>Людям із</div> 
-            <div>порушенням</div> 
+            <div>Людям із</div>
+            <div>порушенням</div>
             <div>зору</div>
           </span>
         </a>
-        <li class="search-item">
-          <button class="search-btn" aria-label="Пошук">
-            <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-              <circle cx="11" cy="11" r="8" stroke="#333" stroke-width="2" fill="none"/>
-              <line x1="16" y1="16" x2="22" y2="22" stroke="#333" stroke-width="2"/>
-            </svg>
-          </button>
-        </li>
+
       </div>
     </div>
 
+    <!-- 1) Гамбургер-кнопка -->
+    <button id="nav-toggle" class="nav-toggle" aria-label="Відкрити меню">☰</button>
+
+    <!-- 2) Меню -->
     <nav class="main-nav">
       <ul>
         <li class="dropdown">
@@ -68,8 +97,8 @@
             <li><a href="#">Керівництво</a></li>
             <li><a href="#">Сервісні центри у медіа</a></li>
             <li><a href="#">Графіки особистого прийому</a></li>
-            <li><a href="#">Успіхи та звіти проєкту «Таємний клієнт»</a></li>
-            <li><a href="#">Євроінтеграція та міжнародне співробітництво</a></li>
+            <li><a href="#">Успіхи та звіти «Таємний клієнт»</a></li>
+            <li><a href="#">Євроінтеграція та міжнар. співпраця</a></li>
           </ul>
         </li>
         <li><button>Послуги</button></li>
@@ -79,7 +108,7 @@
           <button>Контакти</button>
           <ul class="dropdown-menu">
             <li><a href="#">Контакти ГСЦ</a></li>
-            <li><a href="#">Контакти РСЦ та ТСЦ</a></li>
+            <li><a href="#">Контакти РСЦ/ТСЦ</a></li>
             <li><a href="#">Розпорядок роботи</a></li>
           </ul>
         </li>
@@ -87,10 +116,10 @@
           <button>Публічна інформація</button>
           <ul class="dropdown-menu">
             <li class="corruption"><a href="#">Запобігання корупції</a></li>
-            <li><a href="#">Надання відомостей з Єдиного державного реєстру транспортних засобів</a></li>
-            <li><a href="#">Електронне звернення громадян</a></li>
-            <li><a href="#">Запит на публічну інформацію</a></li>
-            <li><a href="#">Державні закупівлі</a></li>
+            <li><a href="#">Відомості з реєстру ТЗ</a></li>
+            <li><a href="#">Е-звернення громадян</a></li>
+            <li><a href="#">Запит на інформацію</a></li>
+            <li><a href="#">Держзакупівлі</a></li>
             <li><a href="#">Громадська експертиза</a></li>
             <li><a href="#">Оголошення</a></li>
             <li><a href="#">Нормативна база</a></li>
@@ -101,76 +130,47 @@
     </nav>
 
     <div class="lang-switch">
-      <a href="https://opendata.hsc.gov.ua/" class="btn-language">Change language: Eng</a>
+      <a href="#" class="btn-language">Change language: Eng</a>
     </div>
   </header>
 
   <section class="check-result">
-    <h2>Результат перевірки верифікації посвідчення водія:</h2>
-    <!-- Важно! Этот элемент нужен для вывода info о пользователе -->
+    <h2>Результат перевірки посвідчення водія:</h2>
     <div id="userInfo" class="doc-info"></div>
     <div class="result-action">
       <button class="btn-success" onclick="history.back()">ПОВЕРНУТИСЯ</button>
     </div>
   </section>
-  
+
   <footer class="site-footer">
     <div class="footer-col">
-      <p>Функціонал працює в режимі дослідної експлуатації.<br>
-      Якщо ви маєте зауваження або пропозиції, будь ласка, напишіть нам: <a href="mailto:info@hsc.gov.ua">info@hsc.gov.ua</a></p>
+      <p>Функціонал у режимі дослідної експлуатації.<br>
+      За пропозиціями: <a href="mailto:info@hsc.gov.ua">info@hsc.gov.ua</a></p>
     </div>
     <div class="footer-col">
-      <p>© 2016 – 2024. Головний сервісний центр МВС</p>
+      <p>© 2016–2024. Головний сервісний центр МВС</p>
     </div>
     <div class="footer-col">
-      <p>04085, м. Київ-85, вул. Лук'янiвська, 62<br>
-      Інформаційний центр: 044-290-19-88</p>
+      <p>04085, Київ-85, вул. Лук’янівська, 62<br>
+      Інфо-центр: 044-290-19-88</p>
     </div>
   </footer>
-  
-  <script>
-    // Вывод данных пользователя по id из url (?id=)
-    (async function(){
-      const params = new URLSearchParams(location.search);
-      const id = params.get('id');
-      if (!id) {
-        document.getElementById('userInfo').innerHTML = '<p>Не передан ID</p>';
-        return;
-      }
-      const res = await fetch('/api/users/' + id);
-      if (!res.ok) {
-        document.getElementById('userInfo').innerHTML = '<p>Користувача не знайдено</p>';
-        return;
-      }
-      const u = await res.json();
-      document.getElementById('userInfo').innerHTML = `
-        <p><strong>Документ на ім'я:</strong><br>${u.name}</p>
-        <dl>
-          <dt>Cтатус:</dt><dd>${u.status || "—"}</dd>
-          <dt><span class="num">3</span> <span class="desc">Дата народження:</span></dt><dd>${u.dob || "—"}</dd>
-          <dt><span class="num">4a</span> <span class="desc">Дата видачі:</span></dt><dd>${u.issueDate || "—"}</dd>
-          <dt><span class="num">4b</span> <span class="desc">Дата закінчення строку дії:</span></dt><dd>${u.expiryDate || "—"}</dd>
-          <dt><span class="num">4c</span> <span class="desc">Ким видано:</span></dt><dd>${u.issuedBy || "—"}</dd>
-          <dt><span class="num">5</span> <span class="desc">Серія та номер:</span></dt><dd>${u.seriesNum || "—"}</dd>
-          <dt><span class="num">9,10</span> <span class="desc">Категорія, дата видачі:</span></dt>
 
-${Array.isArray(u.categories) && u.categories.length
-  ? u.categories.map(c => `<dd>Категорія ${c.cat || "—"} ${c.date || ""}</dd>`).join('')
-  : '<dd>—</dd>'
-}
-
-          <dt><span class="num">12</span> <span class="desc">Обмеження:</span></dt><dd>${u.restrictions || "—"}</dd>
-        </dl>
-      `;
-    })();
-  </script>
   <script>
-    // все кликабельные элементы шапки ведут на opendata.hsc.gov.ua
-    document.querySelectorAll(
-      '.btn-success, .social-icons a, .visually-link, .search-btn, header .main-nav button'
-    ).forEach(el => {
-      el.addEventListener('click', () => {
-        window.location.href = 'https://opendata.hsc.gov.ua/';
+    document.addEventListener('DOMContentLoaded', () => {
+      // 1) Открытие/закрытие всего меню
+      document.getElementById('nav-toggle').addEventListener('click', () => {
+        document.querySelector('.main-nav').classList.toggle('open');
+      });
+
+      // 2) Клики по дропдаунам на мобиле
+      document.querySelectorAll('.main-nav .dropdown > button').forEach(btn => {
+        btn.addEventListener('click', e => {
+          if (window.innerWidth <= 900) {
+            btn.parentElement.classList.toggle('open');
+            e.stopPropagation();
+          }
+        });
       });
     });
   </script>
