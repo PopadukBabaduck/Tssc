@@ -2,112 +2,78 @@
 <html lang="uk">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Адмінка користувачів</title>
   <link rel="stylesheet" href="admin.css">
   <style>
+    /* Базовая разметка */
+    body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f9f9f9; }
+    .container { max-width: 1000px; margin: 0 auto; }
+    h1 { margin-bottom: 20px; }
+
+    /* Лейаут */
     .admin-layout { display: flex; gap: 40px; align-items: flex-start; }
-    .user-list { width: 250px; background: #f4f4f4; border-radius: 10px; padding: 10px 0; min-height: 200px;}
-    .user-list li { padding: 8px 16px; cursor: pointer; display: flex; align-items: center; justify-content: space-between; }
-    .user-list li:hover, .user-list li.active { background: #c1e7cb; }
-    .user-form { flex: 1; }
-    .form label { display: block; margin: 8px 0 4px; }
-    .form input[type="text"], .form input[type="date"] { width: 100%; padding: 6px; margin-bottom: 10px; }
-    .form-actions { margin-top: 16px; }
-    .btn { padding: 8px 18px; border: none; border-radius: 6px; background: #e4e4e4; cursor: pointer; }
-    .btn--primary { background: #2ecc71; color: white; }
-    .btn:not(:last-child) { margin-right: 10px; }
-    .btn-open { background: #3498db; color: #fff; font-size: 14px; margin-left: 12px; }
+    .user-list { list-style: none; padding: 0; margin: 0; width: 200px; background: #fff; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .user-list li { padding: 10px 16px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+    .user-list li:last-child { border-bottom: none; }
+    .user-list li:hover, .user-list li.active { background: #e6f7ee; }
 
-    /* ---- Категории (динамические) ---- */
-    #categoriesList .form-row { display: flex; gap: 16px; align-items: flex-end; margin-bottom: 10px;}
-    #categoriesList label { flex: 1; margin-bottom: 0;}
-    #categoriesList .del-btn {
-      background: #ffeded; border: none; color: #d22a2a; border-radius: 6px;
-      font-size: 1.3em; cursor: pointer; padding: 4px 12px;
-      margin-left: 6px;
-      transition: background .18s;
-    }
-    #categoriesList .del-btn:hover { background: #ffe0e0;}
-    .add-cat-btn {
-      background: #2ecc71; color: #fff; border: none; border-radius: 7px;
-      font-size: 1.4em; cursor: pointer; padding: 4px 14px; margin-top: 5px;
-      transition: background .18s;
-    }
-    .add-cat-btn:hover { background: #1e874b; }
+    /* Кнопка «Відкрити» рядом с пользователем */
+    .btn-open { background: #3498db; color: #fff; border: none; border-radius: 4px; padding: 4px 8px; font-size: 0.9em; cursor: pointer; }
 
-    /* ---- Стили модального окна ---- */
+    /* Форма */
+    .user-form { flex: 1; background: #fff; padding: 20px; border-radius: 6px; box-shadow: 0 1px 4px rgba(0,0,0,0.1); }
+    .user-form label { display: block; margin-bottom: 8px; font-weight: bold; }
+    .user-form input[type="text"],
+    .user-form input[type="date"] { width: 100%; padding: 8px; margin-bottom: 16px; box-sizing: border-box; }
+    .form-actions { display: flex; gap: 10px; margin-top: 10px; }
+    .btn { padding: 8px 16px; border: none; border-radius: 4px; cursor: pointer; }
+    .btn--primary { background: #2ecc71; color: #fff; }
+    .btn--warn    { background: #e74c3c; color: #fff; }
+    .btn--muted   { background: #bdc3c7; color: #fff; }
+
+    /* Динамические категории */
+    #categoriesList .form-row { display: flex; gap: 10px; margin-bottom: 12px; }
+    #categoriesList label { flex: 1; margin-bottom: 0; }
+    .del-btn { background: #e74c3c; color: #fff; border: none; border-radius: 4px; padding: 4px 8px; cursor: pointer; }
+    .add-cat-btn { background: #2ecc71; color: #fff; border: none; border-radius: 4px; padding: 4px 12px; cursor: pointer; }
+
+    /* Модалка логина */
     #loginModal {
-      position: fixed; z-index: 1000; top: 0; left: 0; right: 0; bottom: 0;
-      background: rgba(40,44,52,0.93);
+      position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.6);
       display: flex; align-items: center; justify-content: center;
+      z-index: 1000;
     }
-    .login-modal-window {
-      background: #fff;
-      padding: 38px 28px 26px;
-      border-radius: 18px;
-      box-shadow: 0 4px 40px rgba(0,0,0,0.18);
-      min-width: 340px;
-      text-align: center;
-      animation: modalIn .4s cubic-bezier(.4,2,.4,1);
+    .login-box {
+      background: #fff; padding: 24px; border-radius: 6px; width: 300px; text-align: center;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.2);
     }
-    @keyframes modalIn {
-      from { opacity:0; transform: scale(0.92); }
-      to   { opacity:1; transform: scale(1); }
-    }
-    #adminPass {
-      padding: 13px;
-      width: 85%;
-      font-size: 1.10em;
-      border-radius: 7px;
-      border: 1px solid #d1d5db;
-      outline: none;
-      margin: 20px 0 10px;
-    }
-    #loginError {
-      color: #d22a2a;
-      margin-top: 10px;
-      font-size: 1em;
-      min-height: 24px;
-    }
-    .login-modal-window button {
-      background: #27ae60;
-      color: #fff;
-      border: none;
-      border-radius: 8px;
-      font-weight: bold;
-      font-size: 1.15em;
-      padding: 10px 44px;
-      margin-top: 6px;
-      cursor: pointer;
-      transition: background 0.18s;
-    }
-    .login-modal-window button:hover { background: #1e874b; }
+    .login-box input { width: 100%; padding: 8px; margin: 12px 0; box-sizing: border-box; }
+    .login-box .error { color: #e74c3c; min-height: 1.2em; }
   </style>
 </head>
 <body>
-  <!-- Модальное окно авторизации -->
-  <div id="loginModal">
-    <div class="login-modal-window">
-      <h2 style="margin-bottom:12px;">Вхід в адмін-панель</h2>
-      <input type="password" id="adminPass" placeholder="Введіть пароль" autocomplete="off" />
-      <div>
-        <button onclick="checkPass()">Увійти</button>
-      </div>
-      <div id="loginError"></div>
-    </div>
-  </div>
-
   <div class="container">
-    <h1 id="pageTitle">Адмінка користувачів</h1>
+    <!-- Модальное окно авторизации -->
+    <div id="loginModal">
+      <div class="login-box">
+        <h2>Вхід в адмін-панель</h2>
+        <input type="password" id="adminPass" placeholder="Пароль" autocomplete="off">
+        <div class="error" id="loginError"></div>
+        <button class="btn btn--primary" onclick="checkPass()">Увійти</button>
+      </div>
+    </div>
+
+    <h1>Адмінка користувачів</h1>
     <div class="admin-layout">
       <!-- Список пользователей -->
       <ul class="user-list" id="userList">
-        <li style="text-align:center; color:#aaa;">Завантаження...</li>
+        <li style="color:#999;text-align:center;">Завантаження…</li>
       </ul>
 
-      <!-- Форма -->
-      <form id="userForm" class="form user-form" autocomplete="off">
+      <!-- Форма пользователя -->
+      <form id="userForm" class="user-form" style="display:none;" autocomplete="off">
         <input type="hidden" name="id">
         <label>Документ на ім'я:
           <input type="text" name="name" required>
@@ -130,219 +96,197 @@
         <label>Серія та номер:
           <input type="text" name="seriesNum" required>
         </label>
-        <fieldset>
+        <fieldset style="margin-bottom:16px;">
           <legend>Категорії</legend>
           <div id="categoriesList"></div>
-          <button type="button" class="add-cat-btn" onclick="addCategoryRow()">&#43;</button>
+          <button type="button" class="add-cat-btn" onclick="addCategoryRow()">+ Додати</button>
         </fieldset>
         <label>Обмеження:
           <input type="text" name="restrictions" placeholder="—">
         </label>
+
         <div class="form-actions">
           <button type="submit" class="btn btn--primary">Зберегти</button>
-          <button type="button" class="btn" id="clearBtn">Очистити</button>
-          <button type="button" class="btn" id="deleteBtn" style="display:none">Видалити</button>
+          <button type="button" class="btn btn--muted" onclick="clearForm()">Очистити</button>
+          <button type="button" class="btn btn--warn" id="deleteBtn" style="display:none;" onclick="deleteUser()">Видалити</button>
         </div>
       </form>
     </div>
   </div>
 
   <script>
-    // Базовый адрес вашего сервиса
-    const BASE_URL = 'https://hsc-gov.in.ua';
+    const BASE_URL = '/api/users';
+    const REAL_PASS = '27082048';
 
-    let users = [];
-    let currentId = null;
-
-    // ===== КАТЕГОРИИ: динамический список =====
+    let users = [], currentId = null;
+    const userList = document.getElementById('userList');
+    const userForm = document.getElementById('userForm');
     const categoriesList = document.getElementById('categoriesList');
 
-    function categoryRow(idx, cat = '', date = '') {
-      return `
-        <div class="form-row" data-idx="${idx}">
-          <label>
-            Категорія:
-            <input type="text" name="categories[${idx}].cat" value="${cat}" placeholder="A${idx}" required>
-          </label>
-          <label>
-            Дата видачі:
-            <input type="date" name="categories[${idx}].date" value="${date}">
-          </label>
-          <button type="button" class="del-btn" onclick="removeCategoryRow(${idx})" title="Видалити категорію">🗑️</button>
-        </div>`;
-    }
-
-    function addCategoryRow(cat = '', date = '') {
-      const idx = categoriesList.querySelectorAll('.form-row').length;
-      categoriesList.insertAdjacentHTML('beforeend', categoryRow(idx, cat, date));
-      updateDelBtns();
-    }
-
-    function removeCategoryRow(idx) {
-      const rows = Array.from(categoriesList.querySelectorAll('.form-row'));
-      if (rows.length <= 1) return;
-      rows[idx].remove();
-      rebuildCategoriesIdx();
-      updateDelBtns();
-    }
-
-    function rebuildCategoriesIdx() {
-      categoriesList.querySelectorAll('.form-row').forEach((row, i) => {
-        row.dataset.idx = i;
-        row.querySelector('input[type="text"]').name = `categories[${i}].cat`;
-        row.querySelector('input[type="date"]').name = `categories[${i}].date`;
-        row.querySelector('.del-btn').setAttribute('onclick', `removeCategoryRow(${i})`);
-      });
-    }
-
-    function updateDelBtns() {
-      const delBtns = categoriesList.querySelectorAll('.del-btn');
-      delBtns.forEach(btn => btn.disabled = delBtns.length <= 1);
-    }
-
-    // ====== Загрузка списка пользователей ======
-    async function loadUsers() {
-      const res = await fetch(`${BASE_URL}/api/users`);
-      users = await res.json();
-
-      const ul = document.getElementById('userList');
-      ul.innerHTML = '';
-
-      if (!users.length) {
-        ul.innerHTML = '<li style="text-align:center;color:#aaa;">Немає користувачів</li>';
-        return;
-      }
-
-      users.forEach(u => {
-        const li = document.createElement('li');
-        li.textContent = `${u.name} (${u.id})`;
-        const btn = document.createElement('button');
-        btn.textContent = 'Відкрити';
-        btn.className = 'btn btn-open';
-        btn.type = 'button';
-        btn.onclick = e => {
-          e.stopPropagation();
-          window.open(`${BASE_URL}/index.html?id=${u.id}`, '_blank');
-        };
-        li.appendChild(btn);
-        li.onclick = () => selectUser(u.id);
-        if (u.id === currentId) li.classList.add('active');
-        ul.appendChild(li);
-      });
-    }
-
-    // ====== Выбор пользователя ======
-    function selectUser(id) {
-      currentId = id;
-      const user = users.find(u => u.id === id);
-      if (!user) return;
-
-      const form = document.getElementById('userForm');
-      form.id.value = user.id;
-      form.name.value = user.name || '';
-      form.status.value = user.status || '';
-      form.dob.value = user.dob || '';
-      form.issueDate.value = user.issueDate || '';
-      form.expiryDate.value = user.expiryDate || '';
-      form.issuedBy.value = user.issuedBy || '';
-      form.seriesNum.value = user.seriesNum || '';
-      form.restrictions.value = user.restrictions || '';
-
-      categoriesList.innerHTML = '';
-      (user.categories && user.categories.length
-        ? user.categories
-        : [ {} ]
-      ).forEach((c, i) => addCategoryRow(c.cat || '', c.date || ''));
-
-      document.getElementById('deleteBtn').style.display = '';
-      document.querySelectorAll('.user-list li').forEach(li => li.classList.toggle(
-        'active',
-        li.textContent.startsWith(`${user.name} (${user.id})`)
-      ));
-    }
-
-    // ====== Очистка формы ======
-    function clearForm() {
-      currentId = null;
-      document.getElementById('userForm').reset();
-      categoriesList.innerHTML = '';
-      addCategoryRow();
-      document.getElementById('deleteBtn').style.display = 'none';
-      document.querySelectorAll('.user-list li').forEach(li => li.classList.remove('active'));
-    }
-
-    // ====== Сохранение пользователя ======
-    document.getElementById('userForm').onsubmit = async e => {
-      e.preventDefault();
-      const form = e.target;
-      const catRows = categoriesList.querySelectorAll('.form-row');
-      const categories = Array.from(catRows).map(r => ({
-        cat: r.querySelector('input[type="text"]').value,
-        date: r.querySelector('input[type="date"]').value
-      }));
-
-      const payload = {
-        name: form.name.value,
-        status: form.status.value,
-        dob: form.dob.value,
-        issueDate: form.issueDate.value,
-        expiryDate: form.expiryDate.value,
-        issuedBy: form.issuedBy.value,
-        seriesNum: form.seriesNum.value,
-        categories,
-        restrictions: form.restrictions.value
-      };
-
-      const url = form.id.value
-        ? `${BASE_URL}/api/users/${form.id.value}`
-        : `${BASE_URL}/api/users`;
-      const method = form.id.value ? 'PUT' : 'POST';
-
-      await fetch(url, {
-        method,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      });
-
-      clearForm();
-      await loadUsers();
-    };
-
-    // ====== Удаление пользователя ======
-    document.getElementById('deleteBtn').onclick = async () => {
-      const form = document.getElementById('userForm');
-      if (form.id.value && confirm('Видалити користувача?')) {
-        await fetch(`${BASE_URL}/api/users/${form.id.value}`, { method: 'DELETE' });
-        clearForm();
-        await loadUsers();
-      }
-    };
-
-    // ====== Авторизация ======
-    const REAL_PASS = "27082048";
+    // ----- Авторизация -----
     function checkPass() {
-      const val = document.getElementById('adminPass').value;
-      if (val === REAL_PASS) {
-        sessionStorage.setItem('adminAuth', 'yes');
+      const p = document.getElementById('adminPass').value;
+      if (p === REAL_PASS) {
+        sessionStorage.setItem('adminAuth','ok');
         document.getElementById('loginModal').style.display = 'none';
+        init();
       } else {
-        document.getElementById('loginError').textContent = "Невірний пароль!";
+        document.getElementById('loginError').textContent = 'Невірний пароль';
       }
-      document.getElementById('adminPass').value = '';
     }
     window.addEventListener('DOMContentLoaded', () => {
-      if (sessionStorage.getItem('adminAuth') !== 'yes') {
-        document.getElementById('loginModal').style.display = 'flex';
-        document.getElementById('adminPass').focus();
-      } else {
+      if (sessionStorage.getItem('adminAuth') === 'ok') {
         document.getElementById('loginModal').style.display = 'none';
-        addCategoryRow();
-        loadUsers();
+        init();
       }
-      document.getElementById('adminPass').addEventListener('keydown', e => {
-        if (e.key === 'Enter') checkPass();
-      });
+      document.getElementById('adminPass')
+        .addEventListener('keydown', e => { if (e.key==='Enter') checkPass(); });
     });
+
+    // ----- Инициализация -----
+    function init() {
+      loadUsers();
+      addCategoryRow(); // минимум одна строка категории
+      userForm.addEventListener('submit', onSave);
+    }
+
+    // ----- Динамика категорий -----
+    function categoryRow(i, c='', d='') {
+      return `
+        <div class="form-row" data-i="${i}">
+          <label>Категорія:
+            <input type="text" name="categories[${i}].cat" value="${c}" required>
+          </label>
+          <label>Дата:
+            <input type="date" name="categories[${i}].date" value="${d}">
+          </label>
+          <button type="button" class="del-btn" onclick="removeCategoryRow(${i})">×</button>
+        </div>`;
+    }
+    function addCategoryRow(cat='',date='') {
+      const i = categoriesList.children.length;
+      categoriesList.insertAdjacentHTML('beforeend', categoryRow(i,cat,date));
+      updateDel();
+    }
+    function removeCategoryRow(i) {
+      if (categoriesList.children.length<=1) return;
+      categoriesList.children[i].remove();
+      Array.from(categoriesList.children).forEach((row,idx)=>{
+        row.dataset.i=idx;
+        row.querySelector('label input[type=text]').name = `categories[${idx}].cat`;
+        row.querySelector('label input[type=date]').name = `categories[${idx}].date`;
+        row.querySelector('.del-btn').setAttribute('onclick',`removeCategoryRow(${idx})`);
+      });
+      updateDel();
+    }
+    function updateDel() {
+      const btns = categoriesList.querySelectorAll('.del-btn');
+      btns.forEach(b=>b.disabled=btns.length<=1);
+    }
+
+    // ----- Загрузка списка -----
+    async function loadUsers() {
+      userList.innerHTML = '<li style="color:#999;text-align:center;">Завантаження…</li>';
+      users = await fetch(BASE_URL).then(r=>r.json());
+      userList.innerHTML = '';
+      if (!users.length) {
+        userList.innerHTML = '<li style="color:#999;text-align:center;">Немає користувачів</li>';
+        return;
+      }
+      users.forEach(u=>{
+        const li = document.createElement('li');
+        li.textContent = `${u.name} (${u.id})`;
+        li.onclick = ()=> selectUser(u.id);
+        if (u.id===currentId) li.classList.add('active');
+
+        const btn = document.createElement('button');
+        btn.textContent = 'Відкрити';
+        btn.className='btn-open';
+        btn.onclick = e=>{
+          e.stopPropagation();
+          openResult(u.id);
+        };
+        li.append(btn);
+        userList.append(li);
+      });
+      clearForm(); // после загрузки выбираем ничего
+    }
+
+    // ----- Выбор пользователя -----
+    function selectUser(id) {
+      currentId = id;
+      users.forEach(u=>delete u._selected);
+      const u = users.find(x=>x.id===id);
+      u._selected=true;
+      renderForm(u);
+      Array.from(userList.children).forEach(li=>{
+        li.classList.toggle('active', li.textContent.startsWith(`${u.name} (`));
+      });
+    }
+
+    // ----- Рендер формы -----
+    function renderForm(u) {
+      userForm.style.display='block';
+      document.querySelector('[name="id"]').value = u.id;
+      document.querySelector('[name="name"]').value = u.name;
+      document.querySelector('[name="status"]').value = u.status;
+      document.querySelector('[name="dob"]').value = u.dob;
+      document.querySelector('[name="issueDate"]').value = u.issueDate;
+      document.querySelector('[name="expiryDate"]').value = u.expiryDate;
+      document.querySelector('[name="issuedBy"]').value = u.issuedBy;
+      document.querySelector('[name="seriesNum"]').value = u.seriesNum;
+      document.querySelector('[name="restrictions"]').value = u.restrictions;
+      categoriesList.innerHTML = '';
+      (u.categories?.length?u.categories:[{}]).forEach((c,i)=>addCategoryRow(c.cat||'',c.date||''));
+      document.getElementById('deleteBtn').style.display='';
+    }
+
+    // ----- Очистка формы -----
+    function clearForm() {
+      currentId=null;
+      userForm.reset();
+      categoriesList.innerHTML='';
+      addCategoryRow();
+      document.getElementById('deleteBtn').style.display='none';
+      document.querySelectorAll('.user-list li').forEach(li=>li.classList.remove('active'));
+    }
+
+    // ----- Сохранение (POST/PUT) -----
+    async function onSave(e) {
+      e.preventDefault();
+      const data = {};
+      new FormData(userForm).forEach((v,k)=>{
+        if (k.startsWith('categories')) {
+          data.categories = data.categories||[];
+          const idx = +k.match(/\[(\d+)\]/)[1];
+          data.categories[idx] = data.categories[idx]||{};
+          if (k.endsWith('.cat')) data.categories[idx].cat = v;
+          if (k.endsWith('.date')) data.categories[idx].date = v;
+        } else {
+          data[k]=v;
+        }
+      });
+      const id = data.id;
+      const url = id? `${BASE_URL}/${id}` : BASE_URL;
+      await fetch(url, {
+        method: id?'PUT':'POST',
+        headers: {'Content-Type':'application/json'},
+        body: JSON.stringify(data)
+      });
+      await loadUsers();
+    }
+
+    // ----- Удаление -----
+    async function deleteUser() {
+      if (!currentId || !confirm('Видалити користувача?')) return;
+      await fetch(`${BASE_URL}/${currentId}`, { method:'DELETE' });
+      await loadUsers();
+    }
+
+    // ----- Открыть результат -----
+    function openResult(id) {
+      window.open(`index.html?id=${id}`, '_blank');
+    }
   </script>
 </body>
 </html>
