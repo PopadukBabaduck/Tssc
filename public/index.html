@@ -5,27 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Головний сервісний центр</title>
   <link rel="stylesheet" href="style.css">
-  <!-- ===== Патч для мобильного меню ===== -->
+  <!-- ===== Патч для мобільного меню ===== -->
   <style>
     @media (max-width: 900px) {
-      /* Скрываем основное меню по-умолчанию и показываем при классе .open */
-      .main-nav {
-        display: none;
-      }
-      .main-nav.open {
-        display: block;
-      }
+      /* ховаємо основне меню за замовчуванням */
+      .main-nav { display: none; }
+      .main-nav.open { display: block; }
 
-      /* Выпадашки теперь в потоке (под кнопкой) и скрыты по-умолчанию */
+      /* робимо підменю статичним і ховаємо за замовчуванням */
       .main-nav .dropdown-menu {
         position: static !important;
-        top: auto !important;
-        left: auto !important;
         box-shadow: none;
-        padding-left: 20px;  /* чтобы было видно вложенность */
+        padding-left: 20px;
         display: none;
       }
-      /* Показываем, когда у <li class="dropdown"> есть класс .open */
+      /* показуємо підменю, коли <li class="dropdown open"> */
       .main-nav .dropdown.open > .dropdown-menu {
         display: block;
       }
@@ -37,9 +31,7 @@
     <div class="header-top">
       <!-- Логотип -->
       <div class="logo-col">
-        <div class="dots">
-          <span></span><span></span><span></span>
-        </div>
+        <div class="dots"><span></span><span></span><span></span></div>
         <div class="logo-text">
           <div>Головний</div>
           <div>сервісний</div>
@@ -47,22 +39,22 @@
           <small>МВС</small>
         </div>
       </div>
-              <button class="search-btn" aria-label="Пошук">
-          <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
-            <circle cx="11" cy="11" r="8" stroke="#333" stroke-width="2" fill="none"/>
-            <line x1="16" y1="16" x2="22" y2="22" stroke="#333" stroke-width="2"/>
-          </svg>
-        </button>
+      <!-- Кнопка пошуку (залишили) -->
+      <button class="search-btn" aria-label="Пошук">
+        <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="11" cy="11" r="8" stroke="#333" stroke-width="2" fill="none"/>
+          <line x1="16" y1="16" x2="22" y2="22" stroke="#333" stroke-width="2"/>
+        </svg>
+      </button>
       <!-- Герб + телефон -->
       <div class="center-col">
         <img src="gerb.png" alt="Тризуб" class="crest">
         <a href="tel:+0442901988" class="phone">(044)&nbsp;290-19-88</a>
       </div>
-      <!-- Кнопки справа -->
+      <!-- Правая частина -->
       <div class="right-col">
         <a href="#" class="btn-success">
-          <span class="icon">✓</span>
-          <span class="text">Успіхи 2022</span>
+          <span class="icon">✓</span><span class="text">Успіхи 2022</span>
         </a>
         <div class="social-icons">
           <a href="#"><img src="fab.png" alt="Facebook"></a>
@@ -72,20 +64,15 @@
         </div>
         <a href="#" class="visually-link">
           <img src="gl.png" alt="Для людей із порушенням зору">
-          <span>
-            <div>Людям із</div>
-            <div>порушенням</div>
-            <div>зору</div>
-          </span>
+          <span><div>Людям із</div><div>порушенням</div><div>зору</div></span>
         </a>
-
       </div>
     </div>
 
-    <!-- 1) Гамбургер-кнопка -->
+    <!-- Гамбургер для мобілок -->
     <button id="nav-toggle" class="nav-toggle" aria-label="Відкрити меню">☰</button>
 
-    <!-- 2) Меню -->
+    <!-- Навігація -->
     <nav class="main-nav">
       <ul>
         <li class="dropdown">
@@ -98,7 +85,7 @@
             <li><a href="#">Сервісні центри у медіа</a></li>
             <li><a href="#">Графіки особистого прийому</a></li>
             <li><a href="#">Успіхи та звіти «Таємний клієнт»</a></li>
-            <li><a href="#">Євроінтеграція та міжнар. співпраця</a></li>
+            <li><a href="#">Євроінтеграція та співпраця</a></li>
           </ul>
         </li>
         <li><button>Послуги</button></li>
@@ -136,6 +123,7 @@
 
   <section class="check-result">
     <h2>Результат перевірки посвідчення водія:</h2>
+    <!-- Сюди ми вставимо <dl> з даними -->
     <div id="userInfo" class="doc-info"></div>
     <div class="result-action">
       <button class="btn-success" onclick="history.back()">ПОВЕРНУТИСЯ</button>
@@ -158,21 +146,70 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // 1) Открытие/закрытие всего меню
+      // гамбургер
       document.getElementById('nav-toggle').addEventListener('click', () => {
         document.querySelector('.main-nav').classList.toggle('open');
       });
-
-      // 2) Клики по дропдаунам на мобиле
-      document.querySelectorAll('.main-nav .dropdown > button').forEach(btn => {
-        btn.addEventListener('click', e => {
-          if (window.innerWidth <= 900) {
-            btn.parentElement.classList.toggle('open');
-            e.stopPropagation();
-          }
+      // відкриття підменю на мобілці
+      document.querySelectorAll('.main-nav .dropdown > button')
+        .forEach(btn => {
+          btn.addEventListener('click', e => {
+            if (window.innerWidth <= 900) {
+              btn.parentElement.classList.toggle('open');
+              e.stopPropagation();
+            }
+          });
         });
-      });
     });
+  </script>
+
+  <!-- Ось цей скрипт підтягує дані з API і рендерить їх у вигляді <dl> -->
+  <script>
+    (function(){
+      const BASE = 'https://tssc.onrender.com'; // замініть на ваш домен, якщо треба
+      const container = document.getElementById('userInfo');
+      const q = new URLSearchParams(location.search).get('id');
+      if (!q) {
+        container.textContent = 'Не вказано id';
+        return;
+      }
+      fetch(`${BASE}/api/users/${encodeURIComponent(q)}`)
+        .then(r => {
+          if (!r.ok) throw new Error('Користувача не знайдено');
+          return r.json();
+        })
+        .then(u => {
+          const dl = document.createElement('dl');
+          // перелік полів
+          [
+            ['Статус:',           u.status],
+            ['Дата народження:',  u.dob],
+            ['Дата видачі:',      u.issueDate],
+            ['Строк дії до:',     u.expiryDate],
+            ['Ким видано:',       u.issuedBy],
+            ['Серія та номер:',   u.seriesNum],
+            ['Обмеження:',        u.restrictions || '—']
+          ].forEach(([label, val]) => {
+            const dt = document.createElement('dt'); dt.textContent = label;
+            const dd = document.createElement('dd'); dd.textContent = val || '—';
+            dl.append(dt, dd);
+          });
+          // категорії
+          if (Array.isArray(u.categories)) {
+            u.categories.forEach(c => {
+              const dt = document.createElement('dt');
+              dt.textContent = 'Категорія: ' + (c.cat || '—');
+              const dd = document.createElement('dd');
+              dd.textContent = 'Дата видачі: ' + (c.date || '—');
+              dl.append(dt, dd);
+            });
+          }
+          container.appendChild(dl);
+        })
+        .catch(err => {
+          container.textContent = err.message;
+        });
+    })();
   </script>
 </body>
 </html>
