@@ -8,21 +8,30 @@
   <!-- ===== Патч для мобільного меню ===== -->
   <style>
     @media (max-width: 900px) {
-      /* ховаємо основне меню за замовчуванням */
       .main-nav { display: none; }
       .main-nav.open { display: block; }
 
-      /* робимо підменю статичним і ховаємо за замовчуванням */
       .main-nav .dropdown-menu {
         position: static !important;
         box-shadow: none;
         padding-left: 20px;
         display: none;
       }
-      /* показуємо підменю, коли <li class="dropdown open"> */
       .main-nav .dropdown.open > .dropdown-menu {
         display: block;
       }
+    }
+
+    /* Стиль для отображения ФИО пользователя */
+    .check-result .user-fullname {
+      text-align: center;
+      font-size: 1.5em;
+      font-weight: 600;
+      background: rgba(0, 150, 0, 0.05);
+      padding: 0.5em 0;
+      margin-bottom: 1em;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
   </style>
 </head>
@@ -39,7 +48,7 @@
           <small>МВС</small>
         </div>
       </div>
-      <!-- Кнопка пошуку (залишили) -->
+      <!-- Кнопка пошуку -->
       <button class="search-btn" aria-label="Пошук">
         <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true">
           <circle cx="11" cy="11" r="8" stroke="#333" stroke-width="2" fill="none"/>
@@ -51,7 +60,7 @@
         <img src="gerb.png" alt="Тризуб" class="crest">
         <a href="tel:+0442901988" class="phone">(044)&nbsp;290-19-88</a>
       </div>
-      <!-- Правая частина -->
+      <!-- Права частина -->
       <div class="right-col">
         <a href="#" class="btn-success">
           <span class="icon">✓</span><span class="text">Успіхи 2022</span>
@@ -123,7 +132,6 @@
 
   <section class="check-result">
     <h2>Результат перевірки посвідчення водія:</h2>
-    <!-- Сюди ми вставимо <dl> з даними -->
     <div id="userInfo" class="doc-info"></div>
     <div class="result-action">
       <button class="btn-success" onclick="history.back()">ПОВЕРНУТИСЯ</button>
@@ -146,11 +154,9 @@
 
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      // гамбургер
       document.getElementById('nav-toggle').addEventListener('click', () => {
         document.querySelector('.main-nav').classList.toggle('open');
       });
-      // відкриття підменю на мобілці
       document.querySelectorAll('.main-nav .dropdown > button')
         .forEach(btn => {
           btn.addEventListener('click', e => {
@@ -163,10 +169,9 @@
     });
   </script>
 
-  <!-- Ось цей скрипт підтягує дані з API і рендерить їх у вигляді <dl> -->
   <script>
     (function(){
-      const BASE = 'https://tssc.onrender.com'; // замініть на ваш домен, якщо треба
+      const BASE = 'https://tssc.onrender.com';
       const container = document.getElementById('userInfo');
       const q = new URLSearchParams(location.search).get('id');
       if (!q) {
@@ -179,8 +184,17 @@
           return r.json();
         })
         .then(u => {
+          // Очищаем контейнер перед рендером
+          container.innerHTML = '';
+
+          // 1. ФИО пользователя
+          const nameEl = document.createElement('div');
+          nameEl.className = 'user-fullname';
+          nameEl.textContent = (u.name || '').toUpperCase();
+          container.appendChild(nameEl);
+
+          // 2. Основной список полей
           const dl = document.createElement('dl');
-          // перелік полів
           [
             ['Статус:',           u.status],
             ['Дата народження:',  u.dob],
@@ -194,7 +208,8 @@
             const dd = document.createElement('dd'); dd.textContent = val || '—';
             dl.append(dt, dd);
           });
-          // категорії
+
+          // 3. Категории
           if (Array.isArray(u.categories)) {
             u.categories.forEach(c => {
               const dt = document.createElement('dt');
@@ -204,6 +219,7 @@
               dl.append(dt, dd);
             });
           }
+
           container.appendChild(dl);
         })
         .catch(err => {
@@ -212,4 +228,4 @@
     })();
   </script>
 </body>
-</html>
+</html> 
