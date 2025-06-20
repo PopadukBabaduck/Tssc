@@ -797,3 +797,26 @@ html, body {
     font-weight: 600;
   }
 }
+/* === мобильная адаптация для результатов проверки === */
+@media (max-width: 768px) {
+  .check-result .doc-info dl {
+    /* одна колонка вместо двух */
+    display: block;
+  }
+  .check-result .doc-info dt,
+  .check-result .doc-info dd {
+    /* все подряд — блоки, чтобы шли друг за другом */
+    display: block;
+    text-align: left;
+    margin-bottom: 0.5rem;
+  }
+  .check-result .doc-info dt {
+    /* заголовки не будут переноситься */
+    white-space: nowrap;
+    font-weight: 600;
+  }
+  .check-result .doc-info dd {
+    /* чуть выравнять отступом */
+    padding-left: 1rem;
+  }
+}
