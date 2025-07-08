@@ -77,7 +77,11 @@
 
       <!-- Форма пользователя -->
       <form id="userForm" class="user-form" style="display:none;" autocomplete="off">
-        <input type="hidden" name="id">
+        <label>ID користувача:
+  <input type="text" name="id" id="userIdInput" placeholder="Введіть ID вручну або залиште пустим для авто-генерації">
+</label>
+
+        
         <label>Документ на ім'я:
           <input type="text" name="name" required>
         </label>
@@ -269,14 +273,19 @@
           data[k]=v;
         }
       });
-      const id = data.id;
-      const url = id? `${BASE_URL}/${id}` : BASE_URL;
-      await fetch(url, {
-        method: id?'PUT':'POST',
-        headers: {'Content-Type':'application/json'},
-        body: JSON.stringify(data)
-      });
-      await loadUsers();
+// если id не указан — генерируем!
+if (!data.id) {
+  data.id = generateUserId();
+}
+const id = data.id;
+const url = id ? `${BASE_URL}/${id}` : BASE_URL;
+await fetch(url, {
+  method: id ? 'PUT' : 'POST',
+  headers: {'Content-Type':'application/json'},
+  body: JSON.stringify(data)
+});
+await loadUsers();
+
     }
 
     // ----- Удаление -----
@@ -301,12 +310,13 @@ function generateUserId() {
 // Обработчик кнопки «Створити нового користувача»
 document.getElementById('btn-new-user').addEventListener('click', () => {
   clearForm();
-  const newId = generateUserId();
-  document.querySelector('[name="id"]').value = newId;
+  // НЕ генерируем id автоматически, просто очищаем поле для ввода
+  document.querySelector('[name="id"]').value = '';
   userForm.style.display = 'block';
   document.getElementById('deleteBtn').style.display = 'none';
   document.querySelector('[name="name"]').focus();
 });
+
  
   </script>
 </body>
