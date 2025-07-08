@@ -23,7 +23,7 @@
   <h1 id="pageTitle">Створити нового</h1>
 
   <form id="userForm">
-    <input type="hidden" name="id">
+    <label>ID користувача: <input type="text" name="id" id="userIdInput" placeholder="Введіть ID вручну або залиште пустим"></label><br>
     <label>Документ на ім'я: <input type="text" name="name" required></label><br>
     <label>Статус: <input type="text" name="status" required></label><br>
     <label>Дата народження: <input type="date" name="dob" required></label><br>
@@ -83,7 +83,7 @@
       e.preventDefault();
       const form = e.target;
 
-      // Собираем категории в массив
+      // Категории
       const categories = [
         {
           cat: form['categories[0].cat'].value,
@@ -95,8 +95,15 @@
         }
       ];
 
+      // Берём ID из поля (или генерим, если пусто)
+      let id = form.id.value.trim();
+      if (!id) {
+        id = Math.random().toString(36).substr(2, 8) + Math.random().toString(36).substr(2, 8);
+      }
+
       // Формируем тело запроса
       const data = {
+        id,
         name: form.name.value,
         status: form.status.value,
         dob: form.dob.value,
@@ -108,14 +115,14 @@
         restrictions: form.restrictions.value
       };
 
-      // POST на ваш API
+      // POST на API
       await fetch(`${BASE_URL}/api/users`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
 
-      // После создания — редиректим в админку
+      // Редирект в админку
       window.location.href = `${BASE_URL}/admin.html`;
     });
   </script>
