@@ -290,40 +290,24 @@
     function openResult(id) {
       window.open(`index.html?id=${id}`, '_blank');
     }
-  </script>
-  // 1) Функция для генерации 16-символьного ID (буквы+цифры)
+      // Функция для генерации 16-символьного ID (буквы+цифры)
 function generateUserId() {
-  // если браузер поддерживает UUID:
   if (crypto.randomUUID) {
     return crypto.randomUUID().replace(/-/g, '').substr(0, 16);
   }
-  // fallback:
-  return Math.random().toString(36).substr(2,8)
-       + Math.random().toString(36).substr(2,8);
+  return Math.random().toString(36).substr(2,8) + Math.random().toString(36).substr(2,8);
 }
 
-// 2) Обработчик кнопки «Створити нового користувача»
-document
-  .getElementById('btn-new-user')
-  .addEventListener('click', () => {
-    // clearForm убирает выделение и очищает поля
-    clearForm();
-
-    // сгенерили новый ID
-    const newId = generateUserId();
-
-    // проставляем его в скрытый input
-    document.querySelector('[name="id"]').value = newId;
-
-    // показываем форму (у clearForm она была скрыта)
-    userForm.style.display = 'block';
-
-    // убираем кнопку «Видалити»
-    document.getElementById('deleteBtn').style.display = 'none';
-
-    // и устанавливаем focus на первое поле, например, на имя
-    document.querySelector('[name="name"]').focus();
-  });
-
+// Обработчик кнопки «Створити нового користувача»
+document.getElementById('btn-new-user').addEventListener('click', () => {
+  clearForm();
+  const newId = generateUserId();
+  document.querySelector('[name="id"]').value = newId;
+  userForm.style.display = 'block';
+  document.getElementById('deleteBtn').style.display = 'none';
+  document.querySelector('[name="name"]').focus();
+});
+ 
+  </script>
 </body>
 </html>
